@@ -1,8 +1,11 @@
-import sys
+#!/usr/bin/env python
+
+import argparse
 import glob
 import tqdm
 import numpy as np
 import pylab as pl
+from matplotlib.colors import LogNorm
 from glue.ligolw import utils as ligolw_utils
 from glue.ligolw import ligolw, table, lsctables
 
@@ -12,10 +15,18 @@ class LIGOLWContentHandler(ligolw.LIGOLWContentHandler):
 
 lsctables.use_in(LIGOLWContentHandler)
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--injection-file', type=str, required=True)
+parser.add_argument('--trigger-glob', type=str, required=True)
+parser.add_argument('--plot-file', type=str, required=True)
+parser.add_argument('--x-axis', type=str, choices=['time', 'mchirp'],
+                    required=True)
+args = parser.parse_args()
+
 # read injections
 
-sim_path = '/home/tito/moving_from_atlas/projects/pycbc/bayestar_snr_timeseries/fake_strain_injections_live_paper/H1L1V1-INJECTIONS_ALL.xml.gz'
-doc = ligolw_utils.load_filename(sim_path, False, contenthandler=LIGOLWContentHandler)
+doc = ligolw_utils.load_filename(args.injection_file, False,
+                                 contenthandler=LIGOLWContentHandler)
 sim_table = table.get_table(doc, lsctables.SimInspiralTable.tableName)
 injections = []
 for sim in sim_table:
@@ -30,7 +41,7 @@ print('{} injections'.format(len(injections)))
 # read triggers
 
 triggers = []
-for file_path in tqdm.tqdm(glob.glob(sys.argv[1])):
+for file_path in tqdm.tqdm(glob.glob(args.trigger_glob)):
     doc = ligolw_utils.load_filename(file_path, False, contenthandler=LIGOLWContentHandler)
     coinc_table = table.get_table(doc, lsctables.CoincInspiralTable.tableName)
     end_time, far, mchirp = coinc_table[0].end_time + coinc_table[0].end_time_ns * 1e-9, coinc_table[0].combined_far, coinc_table[0].mchirp
@@ -47,30 +58,39 @@ for injt, mchirp, osnr_h, osnr_l, osnr_v in injections:
     delta_mchirp = abs(triggers[:,2] - mchirp) / mchirp
     i = np.argmin(delta_t)
     far = triggers[i,1] if (delta_t[i] < 0.5 and delta_mchirp[i] < 0.5) else np.nan
-    found.append([injt, osnr_h, osnr_l, osnr_v, far])
+    found.append([injt, mchirp, osnr_h, osnr_l, osnr_v, far])
 found = np.array(found)
 
-network_snr = np.sum(found[:,1:4] ** 2, axis=1) ** 0.5
-decisive_snr = np.array([sorted(found[i,1:4])[1] for i in range(found.shape[0])])
-found_mask = np.isfinite(found[:,4])
+decisive_snr = np.array([sorted(found[i,2:5])[1] for i in range(found.shape[0])])
+found_mask = np.isfinite(found[:,5])
 missed_mask = np.logical_not(found_mask)
 
-title = '{}/{} found'.format(sum(found_mask), len(found_mask))
+title = '{}/{} injections found'.format(sum(found_mask), len(found_mask))
+
+if args.x_axis == 'time':
+    x_quantity = found[:,0] - found[0,0]
+    x_label = 'Injection time (origin at first injection) [s]'
+    x_log = False
+elif args.x_axis == 'mchirp':
+    x_quantity = found[:,1]
+    x_label = 'Injection chirp mass [$M_\\odot$]'
+    x_log = True
 
 pl.figure(figsize=(14,7))
 
-pl.plot(found[missed_mask,0] - found[0,0],
-        decisive_snr[missed_mask], 'xr')
-pl.scatter(found[found_mask,0] - found[0,0],
-           decisive_snr[found_mask],
-           c=np.log10(found[found_mask,4]), vmin=-9, vmax=-4)
+pl.plot(x_quantity[missed_mask], decisive_snr[missed_mask], 'xr')
+pl.scatter(x_quantity[found_mask], decisive_snr[found_mask],
+           c=found[found_mask,5], norm=LogNorm(vmin=1e-9, vmax=1e-4),
+           vmin=1e-9, vmax=1e-4)
 pl.axhline(4.5, ls='--', color='k')
+if x_log:
+    pl.xscale('log')
 pl.yscale('log')
-pl.xlabel('Time')
+pl.xlabel(x_label)
 pl.ylabel('Decisive optimal SNR')
 cb = pl.colorbar(extend='both')
-cb.set_label('log10(FAR [Hz])')
+cb.set_label('FAR [Hz]')
 pl.title(title)
 
 pl.tight_layout()
-pl.savefig('/home/tito/public_html/pycbc/live/o3_initial_review/test.png')
+pl.savefig(args.plot_file)
