@@ -5,8 +5,9 @@
 import argparse
 import glob
 import h5py
-import tqdm
 import numpy as np
+import matplotlib as mpl
+mpl.use('agg')
 import pylab as pl
 
 
@@ -21,7 +22,7 @@ ifos = []
 times = []
 tdurs = []
 
-for fn in tqdm.tqdm(glob.glob(args.trigger_glob)):
+for fn in glob.glob(args.trigger_glob):
     with h5py.File(fn, 'r') as f:
         if 'foreground' not in f:
             continue
