@@ -5,6 +5,7 @@ import glob
 import tqdm
 import numpy as np
 import pylab as pl
+import lal
 from matplotlib.colors import LogNorm
 from glue.ligolw import utils as ligolw_utils
 from glue.ligolw import ligolw, table, lsctables
@@ -19,6 +20,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--injection-file', type=str, required=True)
 parser.add_argument('--trigger-glob', type=str, required=True)
 parser.add_argument('--plot-file', type=str, required=True)
+parser.add_argument('--sens-plot-file', type=str)
 parser.add_argument('--x-axis', type=str, choices=['time', 'mchirp'],
                     required=True)
 args = parser.parse_args()
@@ -94,3 +96,21 @@ pl.title(title)
 
 pl.tight_layout()
 pl.savefig(args.plot_file)
+
+if args.sens_plot_file is not None:
+    pl.figure()
+
+    ifar = np.sort(1. / found[found_mask,5])
+    count = np.arange(len(ifar))[::-1] + 1
+
+    pl.step(ifar / lal.YRJUL_SI, count)
+    pl.xscale('log')
+    pl.xlim(1e-4, 1e3)
+    pl.yscale('log')
+    pl.ylim(1, 1e3)
+    pl.grid()
+    pl.xlabel('Inverse FAR [yr]')
+    pl.ylabel('Cumulative number of injections')
+
+    pl.tight_layout()
+    pl.savefig(args.sens_plot_file)
