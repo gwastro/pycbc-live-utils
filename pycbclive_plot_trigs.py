@@ -9,6 +9,20 @@ import h5py
 from pycbc.results import ifo_color
 
 
+class Autorange:
+    def __init__(self):
+        self.low = np.inf
+        self.high = -np.inf
+
+    def update(self, values):
+        minv = min(values)
+        maxv = max(values)
+        if minv < self.low:
+            self.low = minv
+        if maxv > self.high:
+            self.high = maxv
+
+
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--trigger-files', type=str, nargs='+', required=True)
 parser.add_argument('--highlight-times', type=float, nargs='+')
@@ -17,16 +31,19 @@ args = parser.parse_args()
 
 detectors = 'H1 L1 V1'.split()
 
-pl.figure(figsize=(20, 10))
+fig = pl.figure(figsize=(20, 10))
 ax = {}
+n = 20
 for i, detector in enumerate(detectors):
-    ax[detector] = pl.subplot(len(detectors), 1, i + 1)
-    ax[detector].set_title(detector + ', color = SNR (orange <= 4.5, blue >= 10)')
+    ax[detector] = pl.subplot(len(detectors), n, (n*i + 1, n*i + n-1))
     ax[detector].grid()
-    ax[detector].set_ylabel('Template duration [s]')
+    ax[detector].set_ylabel('{}\nTemplate duration [s]'.format(detector))
+    if i < len(detectors) - 1:
+        ax[detector].set_xticklabels([])
+ax['cb'] = pl.subplot(1, n, n)
 
-min_time = np.inf
-max_time = -np.inf
+ar_time = Autorange()
+ar_dur = Autorange()
 
 for fn in sorted(args.trigger_files):
     print(fn)
@@ -37,21 +54,23 @@ for fn in sorted(args.trigger_files):
             grp = trigfile[detector]
             if 'end_time' not in grp or len(grp['end_time']) == 0:
                 continue
-            if min(grp['end_time']) < min_time:
-                min_time = min(grp['end_time'])
-            if max(grp['end_time']) > max_time:
-                max_time = max(grp['end_time'])
+            ar_time.update(grp['end_time'])
+            ar_dur.update(grp['template_duration'])
             sorter = np.argsort(grp['snr'][:])
-            ax[detector].scatter(grp['end_time'][:][sorter], grp['template_duration'][:][sorter],
-                                 c=grp['snr'][:][sorter], cmap='plasma_r', vmin=4.5, vmax=10)
+            sc = ax[detector].scatter(grp['end_time'][:][sorter], grp['template_duration'][:][sorter],
+                                      c=grp['snr'][:][sorter], cmap='plasma_r', vmin=4.5, vmax=10)
 
 ax[detectors[-1]].set_xlabel('GPS time')
 
 for detector in detectors:
-    ax[detector].set_xlim(min_time, max_time)
+    ax[detector].set_xlim(ar_time.low, ar_time.high)
+    ax[detector].set_ylim(ar_dur.low, ar_dur.high)
     ax[detector].set_yscale('log')
-    for ht in args.highlight_times:
+    for ht in (args.highlight_times or []):
         ax[detector].axvline(ht, ls='--', color='green')
 
-pl.tight_layout()
-pl.savefig(args.output_plot, dpi=200)
+cb = fig.colorbar(sc, cax=ax['cb'], extend='both')
+cb.set_label('SNR')
+
+fig.tight_layout()
+fig.savefig(args.output_plot, dpi=200)
