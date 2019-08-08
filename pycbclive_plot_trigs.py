@@ -10,6 +10,9 @@ from pycbc.results import ifo_color
 
 
 class Autorange:
+    """Utility to keep track of the total range
+    spanned by values in a set of arrays.
+    """
     def __init__(self):
         self.low = np.inf
         self.high = -np.inf
@@ -24,9 +27,14 @@ class Autorange:
 
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--trigger-files', type=str, nargs='+', required=True)
-parser.add_argument('--highlight-times', type=float, nargs='+')
-parser.add_argument('--output-plot', type=str, required=True)
+parser.add_argument('--trigger-files', type=str, nargs='+', required=True, metavar='PATH',
+                    help='List of HDF5 files containing triggers')
+parser.add_argument('--highlight-times', type=float, nargs='+', metavar='GPS',
+                    help='List of GPS times to mark with green dashed lines')
+parser.add_argument('--gates', type=str, nargs='+', metavar='IFO,CENTER,WIDTH,TAPER',
+                    help='List of gating parameters to display')
+parser.add_argument('--output-plot', type=str, required=True,
+                    help='Path to output plot')
 args = parser.parse_args()
 
 detectors = 'H1 L1 V1'.split()
@@ -59,6 +67,7 @@ for fn in sorted(args.trigger_files):
             sorter = np.argsort(grp['snr'][:])
             sc = ax[detector].scatter(grp['end_time'][:][sorter], grp['template_duration'][:][sorter],
                                       c=grp['snr'][:][sorter], cmap='plasma_r', vmin=4.5, vmax=10)
+            # TODO show boundaries of trigger files as well
 
 ax[detectors[-1]].set_xlabel('GPS time')
 
@@ -68,6 +77,13 @@ for detector in detectors:
     ax[detector].set_yscale('log')
     for ht in (args.highlight_times or []):
         ax[detector].axvline(ht, ls='--', color='green')
+    for g in (args.gates or []):
+        gate = g.split(',')
+        if gate[0] != detector:
+            continue
+        g_time, g_width, g_taper = map(float, gate[1:])
+        ax[detector].axvspan(g_time - g_width, g_time + g_width,
+                             hatch='/', facecolor='none', edgecolor='#00ff00')
 
 cb = fig.colorbar(sc, cax=ax['cb'], extend='both')
 cb.set_label('SNR')
