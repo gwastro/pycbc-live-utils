@@ -3,6 +3,7 @@
 """A tool for detailed inspection of single-detector triggers from PyCBC Live."""
 
 import argparse
+import os
 import numpy as np
 import pylab as pl
 import h5py
@@ -24,6 +25,11 @@ class Autorange:
             self.low = minv
         if maxv > self.high:
             self.high = maxv
+
+def plot_gate(ax, gate):
+    g_time, g_width, g_taper = gate
+    ax.axvspan(g_time - g_width, g_time + g_width,
+               hatch='/', facecolor='none', edgecolor='#00ff00')
 
 
 parser = argparse.ArgumentParser(description=__doc__)
@@ -56,10 +62,23 @@ ar_dur = Autorange()
 for fn in sorted(args.trigger_files):
     print(fn)
     with h5py.File(fn, 'r') as trigfile:
+        start_time = float(os.path.basename(fn).split('-')[-2])
+
         for detector in detectors:
+            # show boundaries of different files
+            ax[detector].axvline(start_time, ls=':', color='magenta')
+
             if detector not in trigfile:
                 continue
+
             grp = trigfile[detector]
+
+            # show gates
+            if 'gates' in grp:
+                for gate in grp['gates'][:]:
+                    plot_gate(ax[detector], gate)
+
+            # show triggers
             if 'end_time' not in grp or len(grp['end_time']) == 0:
                 continue
             ar_time.update(grp['end_time'])
@@ -67,7 +86,6 @@ for fn in sorted(args.trigger_files):
             sorter = np.argsort(grp['snr'][:])
             sc = ax[detector].scatter(grp['end_time'][:][sorter], grp['template_duration'][:][sorter],
                                       c=grp['snr'][:][sorter], cmap='plasma_r', vmin=4.5, vmax=10)
-            # TODO show boundaries of trigger files as well
 
 ax[detectors[-1]].set_xlabel('GPS time')
 
@@ -81,9 +99,7 @@ for detector in detectors:
         gate = g.split(',')
         if gate[0] != detector:
             continue
-        g_time, g_width, g_taper = map(float, gate[1:])
-        ax[detector].axvspan(g_time - g_width, g_time + g_width,
-                             hatch='/', facecolor='none', edgecolor='#00ff00')
+        plot_gate(ax[detector], map(float, gate[1:]))
 
 cb = fig.colorbar(sc, cax=ax['cb'], extend='both')
 cb.set_label('SNR')
