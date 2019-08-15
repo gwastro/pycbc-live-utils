@@ -111,6 +111,10 @@ for i in range(0, len(datetime_list_for_ticks)-1):
     ax[1].set_ylabel( "Live detectors' number")
     ax[1].grid(True)
 
-    out_path = '{}/{}.png'.format(sys.argv[2], date_list[i])
     pl.tight_layout()
+
+    out_base = os.path.join(sys.argv[2], date_list[i].strftime('%Y/%m/%d'))
+    os.makedirs(out_base)
+    out_file_name = '{}_lag_over_time.png'.format(date_list[i])
+    out_path = os.path.join(out_base, out_file_name)
     fig.savefig(out_path)
