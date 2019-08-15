@@ -114,7 +114,8 @@ for i in range(0, len(datetime_list_for_ticks)-1):
     pl.tight_layout()
 
     out_base = os.path.join(sys.argv[2], date_list[i].strftime('%Y/%m/%d'))
-    os.makedirs(out_base)
+    if not os.path.exists(out_base):
+        os.makedirs(out_base)
     out_file_name = '{}_lag_over_time.png'.format(date_list[i])
     out_path = os.path.join(out_base, out_file_name)
     fig.savefig(out_path)
