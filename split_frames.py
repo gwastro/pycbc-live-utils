@@ -98,8 +98,7 @@ parser.add_argument("--gps-end-time",
                                 " (integer seconds)", type=int)
 parser.add_argument("--frame-type",
                         type=str,
-                        help="(optional), replaces frame-files. Use datafind "
-                                "to get the needed frame file(s) of this type.")
+                        help="Use datafind to get the needed frame file(s) of this type.")
 parser.add_argument('--frame-duration', type=int, default=4,
                     help='Split all data into smaller frame files of the given duration if specified.')
 parser.add_argument('--outdir', type=str, help='prefix to save strain files', default='.')
