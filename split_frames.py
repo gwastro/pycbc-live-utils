@@ -2,9 +2,10 @@
 '''
 Code to fetch data and split it into short duration frames for pycbc_live testing.
 python split_frames.py \
-        --channel-names H1:DCS-CALIB_STATE_VECTOR_C02 H1:DCS-CALIB_STRAIN_C02 \
+        --channel-name H1:DCS-CALIB_STRAIN_C02 \
+        --other-channel-names H1:DCS-CALIB_STATE_VECTOR_C02  \
         --gps-start-time 1186987282 --gps-end-time 1187012482 \
-        --frame-type H1_HOFT_C02 --frame-duration 4 --outdir H1/
+        --frame-type H1_HOFT_C00 --frame-duration 4 --outdir H1/
 '''
 import os
 import logging
@@ -73,14 +74,10 @@ if not args.dyn_range_factor:
 data = {}
 det_channels = {}
 logging.info("Adding strain channel named {} ...".format(args.channel_name))
-det = args.channel_name.split(':')[0]
-det_channels[det].append(args.channel_name)
+det_channels[args.channel_name.split(':')[0]] = [args.channel_name]
 data[args.channel_name.split(':')[0]] = [out_strain]
 
 if args.other_channel_names:
-    for channel in args.other_channel_names:
-        det_channels[channel.split(':')[0]] = []
-        data[channel.split(':')[0]] = []
     for channel in args.other_channel_names:
         logging.info("Reading channel {} ...".format(channel))
         det = channel.split(':')[0]
