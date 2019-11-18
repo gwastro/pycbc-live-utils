@@ -50,8 +50,6 @@ data = sorted(data) ##sorting time-stamp wise
 lags = np.array([lag for _, _, lag, _ in data])
 ndets = np.array([ndet for _, _, _, ndet in data])
 
-lags_median_average = np.median( lags )
-
 tstamp = np.array([ timestamp for timestamp, _, _, _ in data ])
 
 day_time_array = np.array([  dt.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S') for date_time_str in tstamp ])
