@@ -29,6 +29,8 @@ for input_file in glob.glob(log_wildcard):
             continue
 
         fields = line.split()
+        if not len(fields) == 16 or not len(fields[0]) == 10:
+            continue
         if fields[0] < today:
             continue
 
