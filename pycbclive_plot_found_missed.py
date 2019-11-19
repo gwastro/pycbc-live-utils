@@ -4,6 +4,8 @@ import argparse
 import glob
 import tqdm
 import numpy as np
+import matplotlib
+matplotlib.use('agg')
 import pylab as pl
 import lal
 from matplotlib.colors import LogNorm

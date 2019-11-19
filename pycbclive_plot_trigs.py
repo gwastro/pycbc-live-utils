@@ -5,6 +5,8 @@
 import argparse
 import os
 import numpy as np
+import matplotlib
+matplotlib.use('agg')
 import pylab as pl
 import h5py
 from pycbc.results import ifo_color
