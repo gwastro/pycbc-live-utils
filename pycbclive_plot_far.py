@@ -15,8 +15,13 @@ from scipy.stats import poisson
 
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--input-files', required=True)
-parser.add_argument('--output-plot', required=True)
+parser.add_argument('--input-files', type=str, required=True,
+                    help='Glob pattern for getting trigger files')
+parser.add_argument('--output-plot', type=str, required=True,
+                    help='Output path for the plot')
+parser.add_argument('--detection-times', type=float, nargs='+',
+                    help='GPS times of detections to remove '
+                         'from the trigger set')
 args = parser.parse_args()
 
 ifars = []
@@ -26,22 +31,45 @@ pvalue_livetimes = set()
 dfuts = set()
 time = 0.
 
+ifos = {'H1', 'L1', 'V1', 'K1'}
+
+detection_times = None
+if args.detection_times:
+    detection_times = np.array(args.detection_times)
+
 for fn in tqdm.tqdm(glob.glob(args.input_files)):
     with h5py.File(fn, 'r') as f:
+        # skip legacy results, don't crash
         if 'num_live_detectors' not in f.attrs:
             continue
+
+        # count effective live time
         if f.attrs['num_live_detectors'] > 1:
             time += 8
+
+        # see if there is a candidate
         try:
-            ifar = f['foreground/ifar'][()]
-            stat = f['foreground/stat'][0]
+            fgg = f['foreground']
+            ifar = fgg['ifar'][()]
+            stat = fgg['stat'][0]
+            end_time = None
+            for ifo in ifos & set(fgg.keys()):
+                if 'end_time' in fgg[ifo]:
+                    end_time = fgg[ifo + '/end_time']
         except KeyError:
             continue
         #if 'foreground/NO_FOLLOWUP' in f:
         #    continue
+
+        # don't count actual detections
+        if end_time is not None and detection_times is not None \
+                and np.any(np.abs(detection_times - end_time) < 2):
+            continue
+
         ifars.append(ifar)
         stats.append(stat)
 
+        # pick up FAR-relevant settings
         cl = f.attrs['command_line']
         for i, arg in enumerate(cl):
             if i == 0:
