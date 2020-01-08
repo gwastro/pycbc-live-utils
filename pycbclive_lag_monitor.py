@@ -13,12 +13,16 @@ import matplotlib.dates as md
 from pylab import rcParams
 
 
-rcParams['figure.figsize'] = 13, 6
+rcParams['figure.figsize'] = 15, 7
 rcParams['font.size'] = 12
 
 log_wildcard = sys.argv[1]
 
 today = time.strftime('%Y-%m-%d')
+
+# the time zone is not given in PyCBC Live's log,
+# so assume it matches the current one
+tz = time.strftime("%Z", time.gmtime())
 
 data = []
 
@@ -70,10 +74,6 @@ for i in range(0, len(datetime_list_for_ticks)-1):
     index_list_datewise  = np.argwhere( ( day_time_array>=datetime_list_for_ticks[i])& 
                                         ( day_time_array<=datetime_list_for_ticks[i+1])).flatten()
 
-    #print index_list_datewise
-    
-    ##print datetime_list_for_ticks[i]
-
     datetime_array_daywise = day_time_array[index_list_datewise]
     lags_daywise = lags[index_list_datewise]
     ndets_daywise = ndets[index_list_datewise]
@@ -90,7 +90,7 @@ for i in range(0, len(datetime_list_for_ticks)-1):
         ax[0].scatter(day_time_array_det, l, label='{} live detector(s)'.format(ndet),
                       marker='.', s=3, color=color[ndet], zorder=2)
 
-    xfmt = md.DateFormatter('%Y-%m-%d\n%H:%M:%S PST')
+    xfmt = md.DateFormatter('%Y-%m-%d\n%H:%M:%S ' + tz)
     ax[0].xaxis.set_major_formatter(xfmt)
     ax[0].tick_params(axis='x')
 
@@ -104,7 +104,7 @@ for i in range(0, len(datetime_list_for_ticks)-1):
     ax[0].set_title(title)
 
     ax[1].plot( datetime_array_daywise, ndets_daywise )
-    xfmt = md.DateFormatter('%Y-%m-%d\n%H:%M:%S PST')
+    xfmt = md.DateFormatter('%Y-%m-%d\n%H:%M:%S ' + tz)
     ax[1].xaxis.set_major_formatter(xfmt)
     ax[1].tick_params( axis='x')
     ax[1].set_yticks( [0,1,2,3])
@@ -118,4 +118,4 @@ for i in range(0, len(datetime_list_for_ticks)-1):
         os.makedirs(out_base)
     out_file_name = '{}_lag_over_time.png'.format(date_list[i])
     out_path = os.path.join(out_base, out_file_name)
-    fig.savefig(out_path)
+    fig.savefig(out_path, dpi=200)
