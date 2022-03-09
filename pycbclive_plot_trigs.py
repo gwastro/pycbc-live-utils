@@ -43,18 +43,19 @@ parser.add_argument('--gates', type=str, nargs='+', metavar='IFO,CENTER,WIDTH,TA
                     help='List of gating parameters to display')
 parser.add_argument('--output-plot', type=str, required=True,
                     help='Path to output plot')
+parser.add_argument('--detectors', type=str, nargs='+',
+                    default=['H1', 'L1', 'V1'],
+                    help='Which detectors to plot')
 args = parser.parse_args()
-
-detectors = 'H1 L1 V1'.split()
 
 fig = pl.figure(figsize=(20, 10))
 ax = {}
 n = 20
-for i, detector in enumerate(detectors):
-    ax[detector] = pl.subplot(len(detectors), n, (n*i + 1, n*i + n-1))
+for i, detector in enumerate(args.detectors):
+    ax[detector] = pl.subplot(len(args.detectors), n, (n*i + 1, n*i + n-1))
     ax[detector].grid()
     ax[detector].set_ylabel('{}\nTemplate duration [s]'.format(detector))
-    if i < len(detectors) - 1:
+    if i < len(args.detectors) - 1:
         ax[detector].set_xticklabels([])
 ax['cb'] = pl.subplot(1, n, n)
 
@@ -66,7 +67,7 @@ for fn in sorted(args.trigger_files):
     with h5py.File(fn, 'r') as trigfile:
         start_time = float(os.path.basename(fn).split('-')[-2])
 
-        for detector in detectors:
+        for detector in args.detectors:
             # show boundaries of different files
             ax[detector].axvline(start_time, ls=':', color='magenta')
 
@@ -79,6 +80,7 @@ for fn in sorted(args.trigger_files):
             if 'gates' in grp:
                 for gate in grp['gates'][:]:
                     plot_gate(ax[detector], gate)
+                    ar_time.update([gate[0]])
 
             # show triggers
             if 'end_time' not in grp or len(grp['end_time']) == 0:
@@ -89,9 +91,9 @@ for fn in sorted(args.trigger_files):
             sc = ax[detector].scatter(grp['end_time'][:][sorter], grp['template_duration'][:][sorter],
                                       c=grp['snr'][:][sorter], cmap='plasma_r', vmin=4.5, vmax=10)
 
-ax[detectors[-1]].set_xlabel('GPS time')
+ax[args.detectors[-1]].set_xlabel('GPS time')
 
-for detector in detectors:
+for detector in args.detectors:
     ax[detector].set_xlim(ar_time.low, ar_time.high)
     ax[detector].set_ylim(ar_dur.low, ar_dur.high)
     ax[detector].set_yscale('log')
