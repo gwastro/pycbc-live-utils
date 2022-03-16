@@ -4,14 +4,12 @@ import argparse
 import os
 import glob
 import time
-import numpy as np
 import datetime as dt
+import numpy as np
 import matplotlib
-
 matplotlib.use("agg")
-import pylab as pl
+import matplotlib.pyplot as pl
 import matplotlib.dates as md
-from pylab import rcParams
 
 
 def get_local_tz_name():
@@ -26,8 +24,8 @@ parser.add_argument("--log-glob", required=True)
 parser.add_argument("--output-path", required=True)
 args = parser.parse_args()
 
-rcParams["figure.figsize"] = 15, 7
-rcParams["font.size"] = 12
+pl.rcParams["figure.figsize"] = 15, 7
+pl.rcParams["font.size"] = 12
 
 today = time.strftime("%Y-%m-%d")
 
@@ -103,7 +101,6 @@ for i in range(0, len(datetime_list_for_ticks) - 1):
 
     for ndet in np.unique(ndets):
         l = lags_daywise[ndets_daywise == ndet]
-        color_array = np.where(ndets_daywise == ndet)[0]
         day_time_array_det = datetime_array_daywise[ndets_daywise == ndet]
         ax[0].scatter(
             day_time_array_det,
