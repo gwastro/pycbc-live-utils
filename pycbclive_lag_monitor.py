@@ -22,6 +22,7 @@ def get_local_tz_name():
 parser = argparse.ArgumentParser()
 parser.add_argument("--log-glob", required=True)
 parser.add_argument("--output-path", required=True)
+parser.add_argument("--process-rank", default="0")
 args = parser.parse_args()
 
 pl.rcParams["figure.figsize"] = 15, 7
@@ -37,13 +38,18 @@ data = []
 
 for input_file in glob.glob(args.log_glob):
     for line in open(input_file, "r"):
-        if ("node742" not in line and "node836" not in line) or "duty" not in line:
+        if "duty" not in line:
+            # only interested in lines reporting the stats
             continue
-
         fields = line.split()
-        if not len(fields) == 16 or not len(fields[0]) == 10:
+        if len(fields) != 16 or len(fields[0]) != 10:
+            # a few safety checks
+            continue
+        if fields[3] != args.process_rank:
+            # only look at lines for the given process
             continue
         if fields[0] < today:
+            # only consider today's log
             continue
 
         timestamp = "{} {}".format(
@@ -73,7 +79,6 @@ day_time_array = np.array(
     ]
 )
 daysarray = np.array([i.date() for i in day_time_array])
-datetime_to_float = np.array([int(d.strftime("%s")) for d in day_time_array])
 
 no_days = max(daysarray) - min(daysarray)
 
@@ -81,9 +86,6 @@ date_list = [min(daysarray) + dt.timedelta(days=x) for x in range(0, no_days.day
 datetime_list_for_ticks = [dt.datetime.combine(i, dt.time(00)) for i in date_list]
 
 color = ["red", "orange", "blue", "green"]
-
-
-index_list = np.arange(0, len(day_time_array))
 
 for i in range(0, len(datetime_list_for_ticks) - 1):
     index_list_datewise = np.argwhere(
