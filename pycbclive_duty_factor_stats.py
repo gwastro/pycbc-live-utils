@@ -7,6 +7,15 @@ import numpy as np
 import matplotlib.pyplot as pp
 
 
+def plot_cdf_nicely(x, **kwa):
+    """A nicer version of pp.hist([...] cumulative=-1): it does not bin and
+    does not plot a spurious vertical line at the lowest sample.
+    """
+    sorter = np.argsort(x)
+    fraction = np.arange(len(x))[::-1] / len(x)
+    pp.step(np.array(x)[sorter], fraction, **kwa)
+
+
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--input-log', required=True)
 parser.add_argument('--out-plot')
@@ -40,15 +49,7 @@ if args.out_plot is not None:
     for rank in sorted(duty_factors):
         color = pp.cm.viridis(rank / max(duty_factors))
         lw = 2 if rank == 0 else 0.5
-        pp.hist(
-            duty_factors[rank],
-            10000,
-            cumulative=-1,
-            density=True,
-            histtype='step',
-            color=color,
-            lw=lw
-        )
+        plot_cdf_nicely(duty_factors[rank], color=color, lw=lw)
         df_max = max(df_max, max(duty_factors[rank]))
         df_min = min(df_min, min(duty_factors[rank]))
 
