@@ -105,8 +105,8 @@ if args.dq_vector is not None:
 
 if args.idq_channel is not None:
     #generate a fake idq timeseries
-    idq_dt = 1. / 128.
-    idq_size = int(strain.duration / idq_dt)
+    idq_dt = strain.sample_rate
+    idq_size = len(strain.data)
     rng = default_rng(args.random_seed)
     idq_data = rng.standard_normal(idq_size)-1
     
