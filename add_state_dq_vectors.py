@@ -37,6 +37,10 @@ parser.add_argument('--idq-channel', type=str,
                     help='Name of idq channel')
 parser.add_argument('--random-seed', type=int,
                     help='Random seed used to generate fake idq data')
+parser.add_argument('--idq-bad-times', type=float, nargs='+',
+                    help='Center time(s) of peaks in iDQ timeseries')
+parser.add_argument('--idq-bad-pad', type=float,
+                    help='Duration of peaks in iDQ data')
 
 args = parser.parse_args()
 
@@ -104,10 +108,17 @@ if args.idq_channel is not None:
     idq_dt = 1. / 128.
     idq_size = int(strain.duration / idq_dt)
     rng = default_rng(args.random_seed)
-    idq_data = rng.standard_normal(idq_size)
+    idq_data = rng.standard_normal(idq_size)-1
     
     idq_ts = TimeSeries(idq_data, delta_t=idq_dt,
                         epoch = strain.start_time)
+    idq_ts_times = idq_ts.sample_times.numpy()
+    
+    for idqt in args.idq_bad_times:
+        fnz = np.flatnonzero(abs(idq_ts_times - idqt) < args.idq_bad_pad)
+        if len(fnz):
+            idq_ts[fnz[0]:fnz[-1]+1] += 6
+    
     out_channel_names.append(args.idq_channel)
     out_timeseries.append(idq_ts)
 
