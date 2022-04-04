@@ -35,6 +35,8 @@ parser.add_argument('--dq-bad-pad', type=float,
 
 parser.add_argument('--idq-channel', type=str, 
                     help='Name of idq channel')
+parser.add_argument('--random-seed', type=int,
+                    help='Random seed used to generate fake idq data')
 
 args = parser.parse_args()
 
@@ -99,9 +101,9 @@ if args.dq_vector is not None:
 
 if args.idq_channel is not None:
     #generate a fake idq timeseries
-    idq_dt 1. / 128.
+    idq_dt = 1. / 128.
     idq_size = int(strain.duration / idq_dt)
-    rng = default_rng(123)
+    rng = default_rng(args.random_seed)
     idq_data = rng.standard_normal(idq_size)
     
     idq_ts = TimeSeries(idq_data, delta_t=idq_dt,
