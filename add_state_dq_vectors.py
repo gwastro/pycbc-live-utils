@@ -112,8 +112,6 @@ if args.idq_channel is not None:
     
     idq_ts = TimeSeries(idq_data, delta_t=idq_dt,
                         epoch = strain.start_time)
-    print(strain.get_end_time())
-    print(idq_ts.get_end_time())
     idq_ts_times = idq_ts.sample_times.numpy()
     
     for idqt in args.idq_bad_times:
