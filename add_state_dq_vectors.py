@@ -105,13 +105,15 @@ if args.dq_vector is not None:
 
 if args.idq_channel is not None:
     #generate a fake idq timeseries
-    idq_dt = strain.sample_rate
-    idq_size = len(strain.data)
+    idq_dt = strain.get_delta_t()
+    idq_size = len(strain)
     rng = default_rng(args.random_seed)
     idq_data = rng.standard_normal(idq_size)-1
     
     idq_ts = TimeSeries(idq_data, delta_t=idq_dt,
                         epoch = strain.start_time)
+    print(strain.get_end_time())
+    print(idq_ts.get_end_time())
     idq_ts_times = idq_ts.sample_times.numpy()
     
     for idqt in args.idq_bad_times:
