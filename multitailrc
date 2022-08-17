@@ -1,0 +1,13 @@
+# Multitail config file for color coding PyCBC Live logs
+
+check_mail:0
+
+colorscheme:pycbclive
+cs_re:green:^.+ 0 Coincident candidate.+$
+cs_re:green:^.+ 0 Single-detector candidate.+$
+cs_re:cyan,,bold:^.+ 0 Took.+$
+cs_re:cyan:^.+Took.+$
+cs_re:yellow,red,bold:^.+[Ee]rror.+$
+cs_re:magenta:^[^2].+$
+cs_re:red:^.+is late.+$
+scheme:pycbclive:pycbclive_stderr
