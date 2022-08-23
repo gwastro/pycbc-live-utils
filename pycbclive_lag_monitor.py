@@ -1,156 +1,217 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+
+"""Make a plot showing PyCBC Live's lag and number of usable detectors as a
+function of time and MPI rank, for a given UTC date.
+"""
+
+# Things that would be good to implement next:
+# * Save parsed data to a file next to the plot, as the old lag plotter did
+# * Improve timezone correction (or avoid it by changing PyCBC Live's logging)
+# * Show min/avg/max of lag for rank>0 instead of each curve (Ian's suggestion)
+# * Break the curves when PyCBC Live restarts
+# * Hourly plots
 
 import argparse
+import logging
 import os
 import glob
 import time
-import datetime as dt
+import datetime
 import numpy as np
+from astropy.time import Time
+
 import matplotlib
-matplotlib.use("agg")
-import matplotlib.pyplot as pl
-import matplotlib.dates as md
+matplotlib.use('agg')
+import matplotlib.pyplot as pp
 
 
-def get_local_tz_name():
-    """Return the system's timezone name."""
-    utc_now = dt.datetime.now(dt.timezone.utc)
-    local_now = utc_now.astimezone()
-    return local_now.tzname()
+def iso_to_gps(iso_time):
+    """Convert a string (or list of strings) representing ISO time to the
+    corresponding GPS time.
+
+    Do not call this in a loop over many times, as it is somewhat slow.
+    Instead, give it the list of times to convert.
+    """
+    return Time(iso_time, format='isot').gps
+
+def set_up_x_axis(ax, day):
+    """Configure the horizontal plot axis with hourly ticks,
+    a range spanning the given day, and an appropriate label.
+    """
+    tick_locs = []
+    tick_labels = []
+    for hour in range(24):
+        tick_locs.append(f'{day}T{hour:02d}:00:00Z')
+        tick_labels.append(f'{hour:02d}')
+    tick_locs = iso_to_gps(tick_locs)
+    ax.set_xticks(tick_locs)
+    ax.set_xticklabels(tick_labels)
+    ax.set_xlim(tick_locs[0], tick_locs[-1] + 3600)
+    ax.set_xlabel('UTC hour of day')
+
+def date_argument(date_str):
+    if date_str == 'today':
+        return datetime.datetime.utcnow().date()
+    return datetime.date(*map(int, date_str.split('-')))
+
+def parse_cli():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--day',
+        type=date_argument,
+        default='today',
+        metavar='{YYYY-MM-DD, today}',
+        help='Which (UTC) day we want to show, default today.'
+    )
+    parser.add_argument(
+        '--log-glob',
+        required=True,
+        help='Glob expression for finding all PyCBC Live log files.'
+    )
+    parser.add_argument(
+        '--output-path',
+        required=True,
+        help='Path to a directory where plots will be saved.'
+    )
+    parser.add_argument(
+        '--psd-inverse-length',
+        type=float,
+        default=3.5,
+        help='Should match the setting used in the analysis. '
+             'Determines the bottom of the lag axis.'
+    )
+    parser.add_argument(
+        '--verbose',
+        action='store_true'
+    )
+    return parser.parse_args()
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--log-glob", required=True)
-parser.add_argument("--output-path", required=True)
-parser.add_argument("--process-rank", default="0")
-args = parser.parse_args()
+args = parse_cli()
 
-pl.rcParams["figure.figsize"] = 15, 7
-pl.rcParams["font.size"] = 12
-
-today = time.strftime("%Y-%m-%d")
-
-# the time zone is not given in PyCBC Live's log,
-# so assume it matches the current one
-tz = get_local_tz_name()
-
-data = []
-
-for input_file in glob.glob(args.log_glob):
-    for line in open(input_file, "r"):
-        if "duty" not in line:
-            # only interested in lines reporting the stats
-            continue
-        fields = line.split()
-        if len(fields) != 16 or len(fields[0]) != 10:
-            # a few safety checks
-            continue
-        if fields[3] != args.process_rank:
-            # only look at lines for the given process
-            continue
-        if fields[0] < today:
-            # only consider today's log
-            continue
-
-        timestamp = "{} {}".format(
-            fields[0], fields[1].split(",")[0]
-        )  ## timestamp -- Date and Time
-
-        duty = float(fields[9].replace(",", ""))
-        lag = float(fields[11])
-        ndet = int(fields[13])
-
-        data.append([timestamp, duty, lag, ndet])  ## Array for plotting
-
-if not data:
-    exit()
-
-data = sorted(data)  ##sorting time-stamp wise
-
-lags = np.array([lag for _, _, lag, _ in data])
-ndets = np.array([ndet for _, _, _, ndet in data])
-
-tstamp = np.array([timestamp for timestamp, _, _, _ in data])
-
-day_time_array = np.array(
-    [
-        dt.datetime.strptime(date_time_str, "%Y-%m-%d %H:%M:%S")
-        for date_time_str in tstamp
-    ]
+logging.basicConfig(
+    format='%(asctime)s %(message)s',
+    level=(logging.INFO if args.verbose else logging.WARN)
 )
-daysarray = np.array([i.date() for i in day_time_array])
 
-no_days = max(daysarray) - min(daysarray)
+# read data by parsing log files
+# FIXME PyCBC Live's log timestamps do not specify the timezone (or UTC
+# offset). This is a mess, and forces us to reconstruct them here in order to
+# ultimately convert them to GPS.  For now, this is done by first assuming they
+# are UTC times and converting to GPS, then assuming that the UTC offset of
+# each timestamp matches the UTC offset of the local machine now, and
+# subtracting that offset from the GPS timestamps.  This will be correct most
+# of the time, but not always (e.g.  if there was a daylight saving switch
+# meanwhile).  Maybe the pytz module could help here, but ideally we should
+# just store the UTC offset in the log, or make the log always output UTC
+# times.
+prev_day_str = str(args.day - datetime.timedelta(days=1))
+next_day_str = str(args.day + datetime.timedelta(days=1))
+times = {}
+data = {}
+files = sorted(glob.glob(args.log_glob))
+for f in files:
+    logging.info('Parsing %s', f)
+    with open(f, 'r') as log_f:
+        for line in log_f:
+            if 'Took' not in line:
+                continue
+            if line < prev_day_str or line > next_day_str:
+                # skip lines from the wrong days
+                continue
+            fields = line.split()
+            if len(fields) != 16:
+                continue
+            log_date = fields[0]
+            log_time = fields[1].replace(',', '.')
+            log_rank = int(fields[3])
+            log_lag = float(fields[11])
+            log_n_det = int(fields[13])
+            if log_rank not in times:
+                times[log_rank] = []
+            if log_rank not in data:
+                data[log_rank] = []
+            times[log_rank].append(f'{log_date}T{log_time}Z')
+            data[log_rank].append((log_n_det, log_lag))
 
-date_list = [min(daysarray) + dt.timedelta(days=x) for x in range(0, no_days.days + 2)]
-datetime_list_for_ticks = [dt.datetime.combine(i, dt.time(00)) for i in date_list]
+timezone_offset = time.localtime().tm_gmtoff
+logging.info(
+    'Converting timestamps to GPS; assuming fixed UTC offset %s s',
+    timezone_offset
+)
+for rank in times:
+    times[rank] = iso_to_gps(times[rank])
+    times[rank] -= timezone_offset
 
-color = ["red", "orange", "blue", "green"]
+num_procs = len(data)
+logging.info('%d procs', num_procs)
 
-for i in range(0, len(datetime_list_for_ticks) - 1):
-    index_list_datewise = np.argwhere(
-        (day_time_array >= datetime_list_for_ticks[i])
-        & (day_time_array <= datetime_list_for_ticks[i + 1])
-    ).flatten()
+logging.info('Plotting')
+pp.figure(figsize=(15,7))
+ax_lag = pp.subplot(2, 1, 1)
+ax_n_det = pp.subplot(2, 1, 2)
 
-    datetime_array_daywise = day_time_array[index_list_datewise]
-    lags_daywise = lags[index_list_datewise]
-    ndets_daywise = ndets[index_list_datewise]
+for rank in sorted(data):
+    data[rank] = np.array(data[rank])
+    if rank == 0:
+        # rank-0 gives the total lag, so make it stand out
+        color = '#f00'
+    else:
+        color = pp.cm.viridis(rank / (num_procs - 1))
+    sorter = np.argsort(times[rank])
+    n_det = data[rank][sorter,0]
+    lag = data[rank][sorter,1]
+    if rank in [0, 1, num_procs // 2, num_procs - 1]:
+        label = f'Rank {rank}'
+    else:
+        label = None
+    # rank-0 gives the total lag, so put it on top
+    zorder = num_procs - rank
+    ax_lag.plot(
+        times[rank][sorter],
+        lag,
+        '.-',
+        lw=0.5,
+        markersize=3,
+        markeredgewidth=0,
+        color=color,
+        label=label,
+        zorder=zorder
+    )
+    ax_n_det.plot(
+        times[rank][sorter],
+        n_det,
+        '.-',
+        lw=0.5,
+        markersize=3,
+        markeredgewidth=0,
+        color=color,
+        zorder=zorder
+    )
 
-    fig, ax = pl.subplots(2, 1, sharex=True)
+pp.suptitle(args.day)
+set_up_x_axis(ax_lag, args.day)
+ax_lag.set_ylabel('Lag [s]')
+ax_lag.set_ylim(args.psd_inverse_length, 400)
+ax_lag.set_yscale('log')
+ax_lag.grid(which='both')
+ax_lag.legend()
+set_up_x_axis(ax_n_det, args.day)
+ax_n_det.set_ylabel('Number of usable detectors')
+ax_n_det.set_yticks([0, 1, 2, 3])
+ax_n_det.grid()
 
-    ax[0].plot(datetime_array_daywise, lags_daywise, zorder=1, lw=0.5, color="#808080")
+pp.tight_layout()
 
-    for ndet in np.unique(ndets):
-        l = lags_daywise[ndets_daywise == ndet]
-        day_time_array_det = datetime_array_daywise[ndets_daywise == ndet]
-        ax[0].scatter(
-            day_time_array_det,
-            l,
-            label="{} live detector(s)".format(ndet),
-            marker=".",
-            s=3,
-            color=color[ndet],
-            zorder=2,
-        )
+out_path = os.path.join(
+    args.output_path,
+    f'{args.day.year:04d}',
+    f'{args.day.month:02d}',
+    f'{args.day.day:02d}',
+    f'{args.day}_lag_over_time.png'
+)
+logging.info('Saving plot to %s', out_path)
+os.makedirs(os.path.dirname(out_path), exist_ok=True)
+pp.savefig(out_path, dpi=200)
 
-    xfmt = md.DateFormatter("%Y-%m-%d\n%H:%M:%S " + tz)
-    ax[0].xaxis.set_major_formatter(xfmt)
-    ax[0].tick_params(axis="x")
-
-    title = date_list[i].isoformat()
-    ax[0].set_xlim(datetime_array_daywise[0], datetime_list_for_ticks[i + 1])
-    ax[0].set_ylim(1, 400)
-    ax[0].set_yscale("log")
-    ax[0].grid(True)
-    ax[0].set_ylabel("PyCBC Live triggers-to-disk lag [s]")
-    lgnd = ax[0].legend(ncol=2, loc="best")
-    ax[0].set_title(title)
-
-    ax[1].plot(datetime_array_daywise, ndets_daywise)
-    xfmt = md.DateFormatter("%Y-%m-%d\n%H:%M:%S " + tz)
-    ax[1].xaxis.set_major_formatter(xfmt)
-    ax[1].tick_params(axis="x")
-    ax[1].set_yticks([0, 1, 2, 3])
-    ax[1].set_ylabel("Live detectors' number")
-    ax[1].grid(True)
-
-    pl.tight_layout()
-
-    # figure out and prepare the output directory
-    out_base = os.path.join(args.output_path, date_list[i].strftime("%Y/%m/%d"))
-    if not os.path.exists(out_base):
-        os.makedirs(out_base)
-
-    # save the plot
-    out_file_name = "{}_lag_over_time.png".format(date_list[i])
-    out_path = os.path.join(out_base, out_file_name)
-    fig.savefig(out_path, dpi=200)
-
-    # save the data to an ascii file in case we need it later
-    out_file_name = "{}_lag_over_time.txt".format(date_list[i])
-    data_txt_path = os.path.join(out_base, out_file_name)
-    with open(data_txt_path, "w") as df:
-        df.write("# date time_{} duty_factor lag num_active_detectors\n".format(tz.lower()))
-        for entry in data:
-            df.write("{} {:.2f} {:.2f} {}\n".format(*entry))
+logging.info('Done')
