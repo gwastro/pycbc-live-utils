@@ -114,19 +114,25 @@ for f in files:
     logging.info('Parsing %s', f)
     with open(f, 'r') as log_f:
         for line in log_f:
-            if 'Took' not in line:
+            if 'Took' not in line and 'Starting' not in line:
                 continue
             if line < prev_day_str or line > next_day_str:
                 # skip lines from the wrong days
                 continue
             fields = line.split()
-            if len(fields) != 16:
+            if len(fields) not in [5, 16]:
                 continue
             log_date = fields[0]
             log_time = fields[1].replace(',', '.')
             log_rank = int(fields[3])
-            log_lag = float(fields[11])
-            log_n_det = int(fields[13])
+            if 'Starting' in line:
+                # adding the nan's will tell matplotlib
+                # to break the curves when PyCBC Live starts
+                log_lag = np.nan
+                log_n_det = np.nan
+            else:
+                log_lag = float(fields[11])
+                log_n_det = int(fields[13])
             if log_rank not in times:
                 times[log_rank] = []
             if log_rank not in data:
