@@ -209,7 +209,7 @@ ax_lag.set_ylabel('Lag [s]')
 ax_lag.set_ylim(args.psd_inverse_length, 400)
 ax_lag.set_yscale('log')
 ax_lag.grid(which='both')
-ax_lag.legend()
+ax_lag.legend(loc='upper left')
 ax_n_det.axvspan(
     gps_now,
     gps_now + 86400,
