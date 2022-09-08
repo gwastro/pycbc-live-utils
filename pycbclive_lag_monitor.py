@@ -46,7 +46,7 @@ def set_up_x_axis(ax, day):
     tick_locs = iso_to_gps(tick_locs)
     ax.set_xticks(tick_locs)
     ax.set_xticklabels(tick_labels)
-    ax.set_xlim(tick_locs[0], tick_locs[-1] + 3600)
+    ax.set_xlim(tick_locs[0], tick_locs[-1] + 3600)  # FIXME leap seconds
     ax.set_xlabel('UTC hour of day')
 
 def date_argument(date_str):
@@ -93,6 +93,8 @@ logging.basicConfig(
     format='%(asctime)s %(message)s',
     level=(logging.INFO if args.verbose else logging.WARN)
 )
+
+gps_now = Time.now().gps
 
 # read data by parsing log files
 # FIXME PyCBC Live's log timestamps do not specify the timezone (or UTC
@@ -196,12 +198,24 @@ for rank in sorted(data):
     )
 
 pp.suptitle(args.day)
+ax_lag.axvspan(
+    gps_now,
+    gps_now + 86400,
+    edgecolor='none',
+    facecolor='#d0d0d0'
+)
 set_up_x_axis(ax_lag, args.day)
 ax_lag.set_ylabel('Lag [s]')
 ax_lag.set_ylim(args.psd_inverse_length, 400)
 ax_lag.set_yscale('log')
 ax_lag.grid(which='both')
 ax_lag.legend()
+ax_n_det.axvspan(
+    gps_now,
+    gps_now + 86400,
+    edgecolor='none',
+    facecolor='#d0d0d0'
+)
 set_up_x_axis(ax_n_det, args.day)
 ax_n_det.set_ylabel('Number of usable detectors')
 ax_n_det.set_yticks([0, 1, 2, 3])
@@ -219,5 +233,31 @@ out_path = os.path.join(
 logging.info('Saving plot to %s', out_path)
 os.makedirs(os.path.dirname(out_path), exist_ok=True)
 pp.savefig(out_path, dpi=200)
+
+for hour in range(0, 24):
+    pp.suptitle(f'{args.day}T{hour:02d}')
+    tick_locs = []
+    tick_labels = []
+    for minute in range(60):
+        tick_locs.append(f'{args.day}T{hour:02d}:{minute:02d}:00Z')
+        tick_labels.append(f'{minute:02d}')
+    tick_locs = iso_to_gps(tick_locs)
+    if tick_locs[0] > gps_now:
+        break
+    for ax in [ax_lag, ax_n_det]:
+        ax.set_xticks(tick_locs)
+        ax.set_xticklabels(tick_labels)
+        ax.set_xlim(tick_locs[0], tick_locs[-1] + 60)  # FIXME leap seconds
+        ax.set_xlabel('Minute')
+    pp.tight_layout()
+    out_path = os.path.join(
+        args.output_path,
+        f'{args.day.year:04d}',
+        f'{args.day.month:02d}',
+        f'{args.day.day:02d}',
+        f'{args.day}T{hour:02d}_lag_over_time.png'
+    )
+    logging.info('Saving plot to %s', out_path)
+    pp.savefig(out_path, dpi=200)
 
 logging.info('Done')
