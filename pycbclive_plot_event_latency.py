@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+
+"""
+A plotting script for superevents in GraceDB, showing early warning and allsky events from all pipelines and their latency compared to the event time
+"""
+
 import argparse
 import matplotlib
 matplotlib.use('agg')
