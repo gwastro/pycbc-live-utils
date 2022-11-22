@@ -33,8 +33,8 @@ def iso_to_gps(iso_time):
         dt_time = dateutil_parse(iso_time)
     else:
         # assume an iterable
-        dt_time = map(dateutil_parse, iso_time)
-    return Time(dt_time, format='isot').gps
+        dt_time = list(map(dateutil_parse, iso_time))
+    return Time(dt_time).gps
 
 def set_up_x_axis(ax, day):
     """Configure the horizontal plot axis with hourly ticks,
