@@ -6,19 +6,16 @@ function of time and MPI rank, for a given UTC date.
 
 # Things that would be good to implement next:
 # * Save parsed data to a file next to the plot, as the old lag plotter did
-# * Improve timezone correction (or avoid it by changing PyCBC Live's logging)
 # * Show min/avg/max of lag for rank>0 instead of each curve (Ian's suggestion)
-# * Break the curves when PyCBC Live restarts
-# * Hourly plots
 
 import argparse
 import logging
 import os
 import glob
-import time
 import datetime
 import numpy as np
 from astropy.time import Time
+from dateutil.parser import parse as dateutil_parse
 
 import matplotlib
 matplotlib.use('agg')
@@ -32,7 +29,12 @@ def iso_to_gps(iso_time):
     Do not call this in a loop over many times, as it is somewhat slow.
     Instead, give it the list of times to convert.
     """
-    return Time(iso_time, format='isot').gps
+    if type(iso_time) is str:
+        dt_time = dateutil_parse(iso_time)
+    else:
+        # assume an iterable
+        dt_time = map(dateutil_parse, iso_time)
+    return Time(dt_time, format='isot').gps
 
 def set_up_x_axis(ax, day):
     """Configure the horizontal plot axis with hourly ticks,
@@ -97,16 +99,6 @@ logging.basicConfig(
 gps_now = Time.now().gps
 
 # read data by parsing log files
-# FIXME PyCBC Live's log timestamps do not specify the timezone (or UTC
-# offset). This is a mess, and forces us to reconstruct them here in order to
-# ultimately convert them to GPS.  For now, this is done by first assuming they
-# are UTC times and converting to GPS, then assuming that the UTC offset of
-# each timestamp matches the UTC offset of the local machine now, and
-# subtracting that offset from the GPS timestamps.  This will be correct most
-# of the time, but not always (e.g.  if there was a daylight saving switch
-# meanwhile).  Maybe the pytz module could help here, but ideally we should
-# just store the UTC offset in the log, or make the log always output UTC
-# times.
 prev_day_str = str(args.day - datetime.timedelta(days=1))
 next_day_str = str(args.day + datetime.timedelta(days=1))
 times = {}
@@ -122,34 +114,28 @@ for f in files:
                 # skip lines from the wrong days
                 continue
             fields = line.split()
-            if len(fields) not in [5, 16]:
+            if len(fields) not in [4, 15]:
                 continue
-            log_date = fields[0]
-            log_time = fields[1].replace(',', '.')
-            log_rank = int(fields[3])
+            log_timestamp = fields[0]
+            log_rank = int(fields[2])
             if 'Starting' in line:
                 # adding the nan's will tell matplotlib
                 # to break the curves when PyCBC Live starts
                 log_lag = np.nan
                 log_n_det = np.nan
             else:
-                log_lag = float(fields[11])
-                log_n_det = int(fields[13])
+                log_lag = float(fields[10])
+                log_n_det = int(fields[12])
             if log_rank not in times:
                 times[log_rank] = []
             if log_rank not in data:
                 data[log_rank] = []
-            times[log_rank].append(f'{log_date}T{log_time}Z')
+            times[log_rank].append(log_timestamp)
             data[log_rank].append((log_n_det, log_lag))
 
-timezone_offset = time.localtime().tm_gmtoff
-logging.info(
-    'Converting timestamps to GPS; assuming fixed UTC offset %s s',
-    timezone_offset
-)
+logging.info('Converting timestamps to GPS')
 for rank in times:
     times[rank] = iso_to_gps(times[rank])
-    times[rank] -= timezone_offset
 
 num_procs = len(data)
 logging.info('%d procs', num_procs)
