@@ -144,6 +144,7 @@ logging.info('Plotting')
 pp.figure(figsize=(15,7))
 ax_lag = pp.subplot(2, 1, 1)
 ax_n_det = pp.subplot(2, 1, 2)
+legend_flag = False
 
 for rank in sorted(data):
     data[rank] = np.array(data[rank])
@@ -157,6 +158,7 @@ for rank in sorted(data):
     lag = data[rank][sorter,1]
     if rank in [0, 1, num_procs // 2, num_procs - 1]:
         label = f'Rank {rank}'
+        legend_flag = True
     else:
         label = None
     # rank-0 gives the total lag, so put it on top
@@ -195,7 +197,8 @@ ax_lag.set_ylabel('Lag [s]')
 ax_lag.set_ylim(args.psd_inverse_length, 400)
 ax_lag.set_yscale('log')
 ax_lag.grid(which='both')
-ax_lag.legend(loc='upper left')
+if legend_flag:
+    ax_lag.legend(loc='upper left')
 ax_n_det.axvspan(
     gps_now,
     gps_now + 86400,
