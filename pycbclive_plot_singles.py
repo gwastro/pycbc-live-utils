@@ -2,6 +2,11 @@
 
 """A tool for detailed inspection of single-detector triggers from PyCBC Live."""
 
+# TODO missing features that used to be in `pycbclive_plot_trigs`:
+# * Plotting gates from HDF files.
+# * Showing the boundaries of analysis segments
+#   (probably only useful when plotting a few segments only).
+
 import argparse
 import logging
 import os
