@@ -1,0 +1,589 @@
+[('id', '<U15'), ('commonName', '<U15'), ('version', '<f8'), ('catalog.shortName', '<U20'), ('network_matched_filter_snr', '<f8'), ('chirp_mass_source', '<f8'), ('chirp_mass', '<f8'), ('redshift', '<f8'), ('far', '<f8')]
+Excluding 151008
+Excluding 151012.2
+Excluding 151116
+Excluding 161202
+Excluding 161217
+Excluding 170208
+Excluding 170219
+Excluding 170405
+Excluding 170412
+Excluding 170423
+Excluding 170616
+Excluding 170630
+Excluding 170705
+Excluding 170720
+Excluding 190924_232654
+Not enough values for GW191118_212859 GWTC-3-marginal
+Excluding 191223_014159
+Excluding 191225_215715
+Excluding 200114_020818
+Excluding 200121_031748
+Not enough values for GW200201_203549 GWTC-3-marginal
+Excluding 200214_224526
+Excluding 200214_224526
+Excluding 200219_201407
+Not enough values for GW200311_103121 GWTC-3-marginal
+Excluding GRB051103
+Not enough values for GW150914 O1_O2-Preliminary
+Not enough values for GW150914 O1_O2-Preliminary
+GW150914 [24.4, nan, 28.6, 0.09, 'GWTC-1-confident']
+Not enough values for GW151012 O1_O2-Preliminary
+Not enough values for GW151012 O1_O2-Preliminary
+GW151012 [10.0, nan, 15.2, 0.21, 'GWTC-1-confident']
+Not enough values for GW151226 O1_O2-Preliminary
+GW151226 [13.1, nan, 8.9, 0.09, 'GWTC-1-confident']
+Not enough values for GW170104 O1_O2-Preliminary
+GW170104 [13.0, nan, 21.4, 0.2, 'GWTC-1-confident']
+Not enough values for GW170608 O1_O2-Preliminary
+Not enough values for GW170608 O1_O2-Preliminary
+GW170608 [14.9, nan, 7.9, 0.07, 'GWTC-1-confident']
+GW170729 [10.2, nan, 35.4, 0.49, 'GWTC-1-confident']
+GW170809 [12.4, nan, 24.9, 0.2, 'GWTC-1-confident']
+Not enough values for GW170814 O1_O2-Preliminary
+Not enough values for GW170814 O1_O2-Preliminary
+GW170814 [15.9, nan, 24.1, 0.12, 'GWTC-1-confident']
+Not enough values for GW170817 O1_O2-Preliminary
+Not enough values for GW170817 O1_O2-Preliminary
+GW170817 [33.0, nan, 1.186, 0.01, 'GWTC-1-confident']
+GW170818 [11.3, nan, 26.5, 0.21, 'GWTC-1-confident']
+GW170823 [11.5, nan, 29.2, 0.35, 'GWTC-1-confident']
+GW190403_051519 [7.6, nan, 34.0, 1.18, 'GWTC-2.1-confident']
+GW190408_181802 [14.67360038139546, 23.7, 18.3, 0.29, 'GWTC-2']
+Replacing
+GW190408_181802 [14.6, nan, 18.5, 0.29, 'GWTC-2.1-confident']
+Not enough values for GW190412 O3_Discovery_Papers
+GW190412 [19.0, 15.2, 13.3, 0.15, 'O3_Discovery_Papers']
+Replacing
+GW190412 [19.8, nan, 13.3, 0.15, 'GWTC-2.1-confident']
+GW190413_052954 [8.555396161858269, 39.4, 24.6, 0.59, 'GWTC-2']
+Replacing
+GW190413_052954 [9.0, nan, 24.5, 0.56, 'GWTC-2.1-confident']
+GW190413_134308 [9.030693020279005, 57.0, 33.0, 0.71, 'GWTC-2']
+Replacing
+GW190413_134308 [10.6, nan, 33.3, 0.62, 'GWTC-2.1-confident']
+GW190421_213856 [10.55069569549375, 46.6, 31.2, 0.49, 'GWTC-2']
+Replacing
+GW190421_213856 [10.7, nan, 31.4, 0.45, 'GWTC-2.1-confident']
+GW190424_180648 [10.0939769744873, 43.4, 31.0, 0.39, 'GWTC-2']
+Not enough values for GW190424_180648 GWTC-2.1-auxiliary
+GW190425 [12.46, 1.4868, 1.44, 0.04, 'O3_Discovery_Papers']
+Replacing
+GW190425 [13.02922972476558, 1.49, 1.44, 0.03, 'GWTC-2']
+Replacing
+GW190425 [12.4, nan, 1.44, 0.03, 'GWTC-2.1-confident']
+GW190426_152155 [10.12041364677255, 2.6, 2.41, 0.08, 'GWTC-2']
+Not enough values for GW190426_152155 GWTC-2.1-marginal
+GW190426_190642 [8.7, nan, 76.0, 0.73, 'GWTC-2.1-confident']
+GW190503_185404 [12.09959960690361, 38.6, 30.2, 0.27, 'GWTC-2']
+Replacing
+GW190503_185404 [12.2, nan, 29.3, 0.29, 'GWTC-2.1-confident']
+GW190512_180714 [12.26449406234808, 18.6, 14.6, 0.27, 'GWTC-2']
+Replacing
+GW190512_180714 [12.7, nan, 14.6, 0.28, 'GWTC-2.1-confident']
+GW190513_205428 [12.28987773592599, 29.5, 21.6, 0.37, 'GWTC-2']
+Replacing
+GW190513_205428 [12.5, nan, 21.8, 0.4, 'GWTC-2.1-confident']
+GW190514_065416 [8.304493549646196, 48.1, 28.5, 0.67, 'GWTC-2']
+Replacing
+GW190514_065416 [8.0, nan, 29.1, 0.64, 'GWTC-2.1-confident']
+GW190517_055101 [10.24122163775042, 35.9, 26.6, 0.34, 'GWTC-2']
+Replacing
+GW190517_055101 [10.8, nan, 26.5, 0.33, 'GWTC-2.1-confident']
+GW190519_153544 [12.04985270704691, 65.1, 44.5, 0.44, 'GWTC-2']
+Replacing
+GW190519_153544 [15.9, nan, 44.3, 0.45, 'GWTC-2.1-confident']
+Not enough values for GW190521 O3_Discovery_Papers
+GW190521 [14.6, 117.0, 64.0, 0.82, 'O3_Discovery_Papers']
+GW190521_074359 [24.38410871911596, 39.8, 32.1, 0.24, 'GWTC-2']
+Replacing
+GW190521_074359 [25.9, nan, 32.8, 0.21, 'GWTC-2.1-confident']
+GW190527_092055 [8.867476217742222, 34.9, 24.3, 0.44, 'GWTC-2']
+Replacing
+GW190527_092055 [8.0, nan, 23.9, 0.44, 'GWTC-2.1-confident']
+Not enough values for GW190531_023648 GWTC-2.1-marginal
+GW190602_175927 [12.13087548611321, 72.9, 49.1, 0.47, 'GWTC-2']
+Replacing
+GW190602_175927 [13.2, nan, 48.0, 0.49, 'GWTC-2.1-confident']
+GW190620_030421 [10.91846314686192, 57.5, 38.3, 0.49, 'GWTC-2']
+Replacing
+GW190620_030421 [12.1, nan, 38.1, 0.5, 'GWTC-2.1-confident']
+GW190630_185205 [15.64051208963232, 29.4, 24.9, 0.18, 'GWTC-2']
+Replacing
+GW190630_185205 [16.4, nan, 25.1, 0.18, 'GWTC-2.1-confident']
+GW190701_203306 [11.58996006414267, 55.5, 40.3, 0.37, 'GWTC-2']
+Replacing
+GW190701_203306 [11.2, nan, 40.2, 0.38, 'GWTC-2.1-confident']
+GW190706_222641 [12.34834506062684, 75.1, 42.7, 0.71, 'GWTC-2']
+Replacing
+GW190706_222641 [13.4, nan, 45.6, 0.6, 'GWTC-2.1-confident']
+GW190707_093326 [12.97817936002082, 9.89, 8.5, 0.16, 'GWTC-2']
+Replacing
+GW190707_093326 [13.1, nan, 8.4, 0.17, 'GWTC-2.1-confident']
+GW190708_232457 [13.07130069939341, 15.5, 13.2, 0.18, 'GWTC-2']
+Replacing
+GW190708_232457 [13.4, nan, 13.1, 0.19, 'GWTC-2.1-confident']
+GW190719_215514 [7.993907515410997, 38.7, 23.5, 0.64, 'GWTC-2']
+Replacing
+GW190719_215514 [7.9, nan, 22.8, 0.61, 'GWTC-2.1-confident']
+GW190720_000836 [11.6960978153441, 10.4, 8.9, 0.16, 'GWTC-2']
+Replacing
+GW190720_000836 [10.9, nan, 9.0, 0.16, 'GWTC-2.1-confident']
+GW190725_174728 [9.1, nan, 7.4, 0.2, 'GWTC-2.1-confident']
+GW190727_060333 [12.29941092425987, 44.7, 28.6, 0.55, 'GWTC-2']
+Replacing
+GW190727_060333 [11.7, nan, 29.4, 0.52, 'GWTC-2.1-confident']
+GW190728_064510 [13.64274847591606, 10.1, 8.6, 0.18, 'GWTC-2']
+Replacing
+GW190728_064510 [13.1, nan, 8.6, 0.18, 'GWTC-2.1-confident']
+GW190731_140936 [8.460146466288636, 46.6, 29.5, 0.55, 'GWTC-2']
+Replacing
+GW190731_140936 [8.8, nan, 29.7, 0.56, 'GWTC-2.1-confident']
+GW190803_022701 [8.614396126273874, 42.7, 27.3, 0.55, 'GWTC-2']
+Replacing
+GW190803_022701 [9.3, nan, 27.6, 0.54, 'GWTC-2.1-confident']
+GW190805_211137 [8.1, nan, 31.9, 0.92, 'GWTC-2.1-confident']
+GW190814 [25.0, 6.41, 6.09, 0.053, 'O3_Discovery_Papers']
+Replacing
+GW190814 [25.3, nan, 6.11, 0.05, 'GWTC-2.1-confident']
+GW190828_063405 [16.0359229190588, 34.5, 25.0, 0.38, 'GWTC-2']
+Replacing
+GW190828_063405 [16.5, nan, 24.6, 0.38, 'GWTC-2.1-confident']
+GW190828_065509 [11.12790886853085, 17.4, 13.3, 0.3, 'GWTC-2']
+Replacing
+GW190828_065509 [10.2, nan, 13.4, 0.29, 'GWTC-2.1-confident']
+GW190909_114149 [9.047895, 49.8, 30.9, 0.62, 'GWTC-2']
+Not enough values for GW190909_114149 GWTC-2.1-auxiliary
+GW190910_112807 [13.41737344451953, 43.9, 34.3, 0.28, 'GWTC-2']
+Replacing
+GW190910_112807 [14.5, nan, 33.5, 0.29, 'GWTC-2.1-confident']
+GW190915_235702 [13.07209167194663, 33.1, 25.3, 0.3, 'GWTC-2']
+Replacing
+GW190915_235702 [13.1, nan, 24.4, 0.32, 'GWTC-2.1-confident']
+GW190916_200658 [8.1, nan, 26.9, 0.77, 'GWTC-2.1-confident']
+GW190917_114630 [8.3, nan, 3.7, 0.15, 'GWTC-2.1-confident']
+GW190924_021846 [13.15903752184739, 6.44, 5.8, 0.12, 'GWTC-2']
+Replacing
+GW190924_021846 [12.0, nan, 5.8, 0.11, 'GWTC-2.1-confident']
+GW190925_232845 [9.7, nan, 15.6, 0.19, 'GWTC-2.1-confident']
+GW190926_050336 [8.1, nan, 24.4, 0.55, 'GWTC-2.1-confident']
+GW190929_012149 [9.875628916044713, 52.2, 35.8, 0.38, 'GWTC-2']
+Replacing
+GW190929_012149 [9.7, nan, 35.6, 0.53, 'GWTC-2.1-confident']
+GW190930_133541 [9.837638319153829, 9.8, 8.5, 0.15, 'GWTC-2']
+Replacing
+GW190930_133541 [9.7, nan, 8.5, 0.16, 'GWTC-2.1-confident']
+GW191103_012549 [8.9, nan, 8.34, 0.2, 'GWTC-3-confident']
+GW191105_143521 [9.7, nan, 7.82, 0.23, 'GWTC-3-confident']
+GW191109_010717 [17.3, nan, 47.5, 0.25, 'GWTC-3-confident']
+GW191113_071753 [7.9, nan, 10.7, 0.26, 'GWTC-3-confident']
+GW191126_115259 [8.3, nan, 8.65, 0.3, 'GWTC-3-confident']
+GW191127_050227 [9.2, nan, 29.9, 0.57, 'GWTC-3-confident']
+GW191129_134029 [13.1, nan, 7.31, 0.16, 'GWTC-3-confident']
+GW191204_110529 [8.8, nan, 19.8, 0.34, 'GWTC-3-confident']
+GW191204_171526 [17.5, nan, 8.55, 0.13, 'GWTC-3-confident']
+GW191215_223052 [11.2, nan, 18.4, 0.35, 'GWTC-3-confident']
+GW191216_213338 [18.6, nan, 8.33, 0.07, 'GWTC-3-confident']
+GW191219_163120 [9.1, nan, 4.32, 0.11, 'GWTC-3-confident']
+GW191222_033537 [12.5, nan, 33.8, 0.51, 'GWTC-3-confident']
+GW191230_180458 [10.4, nan, 36.5, 0.69, 'GWTC-3-confident']
+GW200105_162426 [13.9, 3.62, 3.41, 0.06, 'O3_Discovery_Papers']
+GW200112_155838 [19.8, nan, 27.4, 0.24, 'GWTC-3-confident']
+GW200115_042309 [11.6, 2.58, 2.42, 0.07, 'O3_Discovery_Papers']
+GW200128_022011 [10.6, nan, 32.0, 0.56, 'GWTC-3-confident']
+GW200129_065458 [26.8, nan, 27.2, 0.18, 'GWTC-3-confident']
+GW200202_154313 [10.8, nan, 7.49, 0.09, 'GWTC-3-confident']
+GW200208_130117 [10.8, nan, 27.7, 0.4, 'GWTC-3-confident']
+GW200208_222617 [7.4, nan, 19.6, 0.66, 'GWTC-3-confident']
+GW200209_085452 [9.6, nan, 26.7, 0.57, 'GWTC-3-confident']
+GW200210_092254 [8.4, nan, 6.56, 0.19, 'GWTC-3-confident']
+GW200216_220804 [8.1, nan, 32.9, 0.63, 'GWTC-3-confident']
+GW200219_094415 [10.7, nan, 27.6, 0.57, 'GWTC-3-confident']
+GW200220_061928 [7.2, nan, 62.0, 0.9, 'GWTC-3-confident']
+GW200220_124850 [8.5, nan, 28.2, 0.66, 'GWTC-3-confident']
+GW200224_222234 [20.0, nan, 31.1, 0.32, 'GWTC-3-confident']
+GW200225_060421 [12.5, nan, 14.2, 0.22, 'GWTC-3-confident']
+GW200302_015811 [10.8, nan, 23.4, 0.28, 'GWTC-3-confident']
+GW200306_093714 [7.8, nan, 17.5, 0.38, 'GWTC-3-confident']
+GW200308_173609 [7.1, nan, 19.0, 0.83, 'GWTC-3-confident']
+GW200311_115853 [17.8, nan, 26.6, 0.23, 'GWTC-3-confident']
+GW200316_215756 [10.3, nan, 8.75, 0.22, 'GWTC-3-confident']
+GW200322_091133 [6.0, nan, 15.5, 0.6, 'GWTC-3-confident']
+Excluding blind_injection
+94 events found
+No detector frame mchirp for GW150914
+Source frame 28.6 gives detector frame 31.174000000000003
+No detector frame mchirp for GW151012
+Source frame 15.2 gives detector frame 18.392
+No detector frame mchirp for GW151226
+Source frame 8.9 gives detector frame 9.701
+No detector frame mchirp for GW170104
+Source frame 21.4 gives detector frame 25.679999999999996
+No detector frame mchirp for GW170608
+Source frame 7.9 gives detector frame 8.453000000000001
+No detector frame mchirp for GW170729
+Source frame 35.4 gives detector frame 52.745999999999995
+No detector frame mchirp for GW170809
+Source frame 24.9 gives detector frame 29.879999999999995
+No detector frame mchirp for GW170814
+Source frame 24.1 gives detector frame 26.992000000000004
+No detector frame mchirp for GW170817
+Source frame 1.186 gives detector frame 1.19786
+No detector frame mchirp for GW170818
+Source frame 26.5 gives detector frame 32.065
+No detector frame mchirp for GW170823
+Source frame 29.2 gives detector frame 39.42
+No detector frame mchirp for GW190403_051519
+Source frame 34.0 gives detector frame 74.11999999999999
+No detector frame mchirp for GW190408_181802
+Source frame 18.5 gives detector frame 23.865000000000002
+No detector frame mchirp for GW190412
+Source frame 13.3 gives detector frame 15.295
+No detector frame mchirp for GW190413_052954
+Source frame 24.5 gives detector frame 38.22
+No detector frame mchirp for GW190413_134308
+Source frame 33.3 gives detector frame 53.946
+No detector frame mchirp for GW190421_213856
+Source frame 31.4 gives detector frame 45.529999999999994
+Detector frame mchirp for GW190424_180648
+No detector frame mchirp for GW190425
+Source frame 1.44 gives detector frame 1.4832
+Detector frame mchirp for GW190426_152155
+No detector frame mchirp for GW190426_190642
+Source frame 76.0 gives detector frame 131.48
+No detector frame mchirp for GW190503_185404
+Source frame 29.3 gives detector frame 37.797000000000004
+No detector frame mchirp for GW190512_180714
+Source frame 14.6 gives detector frame 18.688
+No detector frame mchirp for GW190513_205428
+Source frame 21.8 gives detector frame 30.52
+No detector frame mchirp for GW190514_065416
+Source frame 29.1 gives detector frame 47.724000000000004
+No detector frame mchirp for GW190517_055101
+Source frame 26.5 gives detector frame 35.245000000000005
+No detector frame mchirp for GW190519_153544
+Source frame 44.3 gives detector frame 64.235
+Detector frame mchirp for GW190521
+No detector frame mchirp for GW190521_074359
+Source frame 32.8 gives detector frame 39.687999999999995
+No detector frame mchirp for GW190527_092055
+Source frame 23.9 gives detector frame 34.416
+No detector frame mchirp for GW190602_175927
+Source frame 48.0 gives detector frame 71.52
+No detector frame mchirp for GW190620_030421
+Source frame 38.1 gives detector frame 57.150000000000006
+No detector frame mchirp for GW190630_185205
+Source frame 25.1 gives detector frame 29.618
+No detector frame mchirp for GW190701_203306
+Source frame 40.2 gives detector frame 55.476
+No detector frame mchirp for GW190706_222641
+Source frame 45.6 gives detector frame 72.96000000000001
+No detector frame mchirp for GW190707_093326
+Source frame 8.4 gives detector frame 9.828
+No detector frame mchirp for GW190708_232457
+Source frame 13.1 gives detector frame 15.588999999999999
+No detector frame mchirp for GW190719_215514
+Source frame 22.8 gives detector frame 36.708
+No detector frame mchirp for GW190720_000836
+Source frame 9.0 gives detector frame 10.44
+No detector frame mchirp for GW190725_174728
+Source frame 7.4 gives detector frame 8.88
+No detector frame mchirp for GW190727_060333
+Source frame 29.4 gives detector frame 44.687999999999995
+No detector frame mchirp for GW190728_064510
+Source frame 8.6 gives detector frame 10.148
+No detector frame mchirp for GW190731_140936
+Source frame 29.7 gives detector frame 46.332
+No detector frame mchirp for GW190803_022701
+Source frame 27.6 gives detector frame 42.504000000000005
+No detector frame mchirp for GW190805_211137
+Source frame 31.9 gives detector frame 61.248
+No detector frame mchirp for GW190814
+Source frame 6.11 gives detector frame 6.415500000000001
+No detector frame mchirp for GW190828_063405
+Source frame 24.6 gives detector frame 33.948
+No detector frame mchirp for GW190828_065509
+Source frame 13.4 gives detector frame 17.286
+Detector frame mchirp for GW190909_114149
+No detector frame mchirp for GW190910_112807
+Source frame 33.5 gives detector frame 43.215
+No detector frame mchirp for GW190915_235702
+Source frame 24.4 gives detector frame 32.208
+No detector frame mchirp for GW190916_200658
+Source frame 26.9 gives detector frame 47.613
+No detector frame mchirp for GW190917_114630
+Source frame 3.7 gives detector frame 4.255
+No detector frame mchirp for GW190924_021846
+Source frame 5.8 gives detector frame 6.438000000000001
+No detector frame mchirp for GW190925_232845
+Source frame 15.6 gives detector frame 18.564
+No detector frame mchirp for GW190926_050336
+Source frame 24.4 gives detector frame 37.82
+No detector frame mchirp for GW190929_012149
+Source frame 35.6 gives detector frame 54.468
+No detector frame mchirp for GW190930_133541
+Source frame 8.5 gives detector frame 9.86
+No detector frame mchirp for GW191103_012549
+Source frame 8.34 gives detector frame 10.008
+No detector frame mchirp for GW191105_143521
+Source frame 7.82 gives detector frame 9.6186
+No detector frame mchirp for GW191109_010717
+Source frame 47.5 gives detector frame 59.375
+No detector frame mchirp for GW191113_071753
+Source frame 10.7 gives detector frame 13.482
+No detector frame mchirp for GW191126_115259
+Source frame 8.65 gives detector frame 11.245000000000001
+No detector frame mchirp for GW191127_050227
+Source frame 29.9 gives detector frame 46.94299999999999
+No detector frame mchirp for GW191129_134029
+Source frame 7.31 gives detector frame 8.4796
+No detector frame mchirp for GW191204_110529
+Source frame 19.8 gives detector frame 26.532000000000004
+No detector frame mchirp for GW191204_171526
+Source frame 8.55 gives detector frame 9.6615
+No detector frame mchirp for GW191215_223052
+Source frame 18.4 gives detector frame 24.84
+No detector frame mchirp for GW191216_213338
+Source frame 8.33 gives detector frame 8.9131
+No detector frame mchirp for GW191219_163120
+Source frame 4.32 gives detector frame 4.7952
+No detector frame mchirp for GW191222_033537
+Source frame 33.8 gives detector frame 51.038
+No detector frame mchirp for GW191230_180458
+Source frame 36.5 gives detector frame 61.684999999999995
+Detector frame mchirp for GW200105_162426
+No detector frame mchirp for GW200112_155838
+Source frame 27.4 gives detector frame 33.976
+Detector frame mchirp for GW200115_042309
+No detector frame mchirp for GW200128_022011
+Source frame 32.0 gives detector frame 49.92
+No detector frame mchirp for GW200129_065458
+Source frame 27.2 gives detector frame 32.096
+No detector frame mchirp for GW200202_154313
+Source frame 7.49 gives detector frame 8.164100000000001
+No detector frame mchirp for GW200208_130117
+Source frame 27.7 gives detector frame 38.779999999999994
+No detector frame mchirp for GW200208_222617
+Source frame 19.6 gives detector frame 32.53600000000001
+No detector frame mchirp for GW200209_085452
+Source frame 26.7 gives detector frame 41.919
+No detector frame mchirp for GW200210_092254
+Source frame 6.56 gives detector frame 7.806399999999999
+No detector frame mchirp for GW200216_220804
+Source frame 32.9 gives detector frame 53.626999999999995
+No detector frame mchirp for GW200219_094415
+Source frame 27.6 gives detector frame 43.332
+No detector frame mchirp for GW200220_061928
+Source frame 62.0 gives detector frame 117.8
+No detector frame mchirp for GW200220_124850
+Source frame 28.2 gives detector frame 46.812000000000005
+No detector frame mchirp for GW200224_222234
+Source frame 31.1 gives detector frame 41.05200000000001
+No detector frame mchirp for GW200225_060421
+Source frame 14.2 gives detector frame 17.323999999999998
+No detector frame mchirp for GW200302_015811
+Source frame 23.4 gives detector frame 29.951999999999998
+No detector frame mchirp for GW200306_093714
+Source frame 17.5 gives detector frame 24.15
+No detector frame mchirp for GW200308_173609
+Source frame 19.0 gives detector frame 34.77
+No detector frame mchirp for GW200311_115853
+Source frame 26.6 gives detector frame 32.718
+No detector frame mchirp for GW200316_215756
+Source frame 8.75 gives detector frame 10.674999999999999
+No detector frame mchirp for GW200322_091133
+Source frame 15.5 gives detector frame 24.8
+94 events with mchirp det
+SNR ascending:
+6.0 24.8 GW200322_091133
+7.1 34.77 GW200308_173609
+7.2 117.8 GW200220_061928
+7.4 32.53600000000001 GW200208_222617
+7.6 74.11999999999999 GW190403_051519
+7.8 24.15 GW200306_093714
+7.9 13.482 GW191113_071753
+7.9 36.708 GW190719_215514
+8.0 34.416 GW190527_092055
+8.0 47.724000000000004 GW190514_065416
+8.1 61.248 GW190805_211137
+8.1 47.613 GW190916_200658
+8.1 53.626999999999995 GW200216_220804
+8.1 37.82 GW190926_050336
+8.3 4.255 GW190917_114630
+8.3 11.245000000000001 GW191126_115259
+8.4 7.806399999999999 GW200210_092254
+8.5 46.812000000000005 GW200220_124850
+8.7 131.48 GW190426_190642
+8.8 26.532000000000004 GW191204_110529
+8.8 46.332 GW190731_140936
+8.9 10.008 GW191103_012549
+9.0 38.22 GW190413_052954
+9.047895 49.8 GW190909_114149
+9.1 4.7952 GW191219_163120
+9.1 8.88 GW190725_174728
+9.2 46.94299999999999 GW191127_050227
+9.3 42.504000000000005 GW190803_022701
+9.6 41.919 GW200209_085452
+9.7 18.564 GW190925_232845
+9.7 54.468 GW190929_012149
+9.7 9.86 GW190930_133541
+9.7 9.6186 GW191105_143521
+10.0 18.392 GW151012
+10.0939769744873 43.4 GW190424_180648
+10.12041364677255 2.6 GW190426_152155
+10.2 17.286 GW190828_065509
+10.2 52.745999999999995 GW170729
+10.3 10.674999999999999 GW200316_215756
+10.4 61.684999999999995 GW191230_180458
+10.6 49.92 GW200128_022011
+10.6 53.946 GW190413_134308
+10.7 45.529999999999994 GW190421_213856
+10.7 43.332 GW200219_094415
+10.8 35.245000000000005 GW190517_055101
+10.8 8.164100000000001 GW200202_154313
+10.8 38.779999999999994 GW200208_130117
+10.8 29.951999999999998 GW200302_015811
+10.9 10.44 GW190720_000836
+11.2 24.84 GW191215_223052
+11.2 55.476 GW190701_203306
+11.3 32.065 GW170818
+11.5 39.42 GW170823
+11.6 2.58 GW200115_042309
+11.7 44.687999999999995 GW190727_060333
+12.0 6.438000000000001 GW190924_021846
+12.1 57.150000000000006 GW190620_030421
+12.2 37.797000000000004 GW190503_185404
+12.4 1.4832 GW190425
+12.4 29.879999999999995 GW170809
+12.5 30.52 GW190513_205428
+12.5 17.323999999999998 GW200225_060421
+12.5 51.038 GW191222_033537
+12.7 18.688 GW190512_180714
+13.0 25.679999999999996 GW170104
+13.1 9.828 GW190707_093326
+13.1 9.701 GW151226
+13.1 32.208 GW190915_235702
+13.1 10.148 GW190728_064510
+13.1 8.4796 GW191129_134029
+13.2 71.52 GW190602_175927
+13.4 15.588999999999999 GW190708_232457
+13.4 72.96000000000001 GW190706_222641
+13.9 3.62 GW200105_162426
+14.5 43.215 GW190910_112807
+14.6 23.865000000000002 GW190408_181802
+14.6 117.0 GW190521
+14.9 8.453000000000001 GW170608
+15.9 64.235 GW190519_153544
+15.9 26.992000000000004 GW170814
+16.4 29.618 GW190630_185205
+16.5 33.948 GW190828_063405
+17.3 59.375 GW191109_010717
+17.5 9.6615 GW191204_171526
+17.8 32.718 GW200311_115853
+18.6 8.9131 GW191216_213338
+19.8 33.976 GW200112_155838
+19.8 15.295 GW190412
+20.0 41.05200000000001 GW200224_222234
+24.4 31.174000000000003 GW150914
+25.3 6.415500000000001 GW190814
+25.9 39.687999999999995 GW190521_074359
+26.8 32.096 GW200129_065458
+33.0 1.19786 GW170817
+Detector frame mchirp ascending:
+1.19786 GW170817 33.0
+1.4832 GW190425 12.4
+2.58 GW200115_042309 11.6
+2.6 GW190426_152155 10.12041364677255
+3.62 GW200105_162426 13.9
+4.255 GW190917_114630 8.3
+4.7952 GW191219_163120 9.1
+6.415500000000001 GW190814 25.3
+6.438000000000001 GW190924_021846 12.0
+7.806399999999999 GW200210_092254 8.4
+8.164100000000001 GW200202_154313 10.8
+8.453000000000001 GW170608 14.9
+8.4796 GW191129_134029 13.1
+8.88 GW190725_174728 9.1
+8.9131 GW191216_213338 18.6
+9.6186 GW191105_143521 9.7
+9.6615 GW191204_171526 17.5
+9.701 GW151226 13.1
+9.828 GW190707_093326 13.1
+9.86 GW190930_133541 9.7
+10.008 GW191103_012549 8.9
+10.148 GW190728_064510 13.1
+10.44 GW190720_000836 10.9
+10.674999999999999 GW200316_215756 10.3
+11.245000000000001 GW191126_115259 8.3
+13.482 GW191113_071753 7.9
+15.295 GW190412 19.8
+15.588999999999999 GW190708_232457 13.4
+17.286 GW190828_065509 10.2
+17.323999999999998 GW200225_060421 12.5
+18.392 GW151012 10.0
+18.564 GW190925_232845 9.7
+18.688 GW190512_180714 12.7
+23.865000000000002 GW190408_181802 14.6
+24.15 GW200306_093714 7.8
+24.8 GW200322_091133 6.0
+24.84 GW191215_223052 11.2
+25.679999999999996 GW170104 13.0
+26.532000000000004 GW191204_110529 8.8
+26.992000000000004 GW170814 15.9
+29.618 GW190630_185205 16.4
+29.879999999999995 GW170809 12.4
+29.951999999999998 GW200302_015811 10.8
+30.52 GW190513_205428 12.5
+31.174000000000003 GW150914 24.4
+32.065 GW170818 11.3
+32.096 GW200129_065458 26.8
+32.208 GW190915_235702 13.1
+32.53600000000001 GW200208_222617 7.4
+32.718 GW200311_115853 17.8
+33.948 GW190828_063405 16.5
+33.976 GW200112_155838 19.8
+34.416 GW190527_092055 8.0
+34.77 GW200308_173609 7.1
+35.245000000000005 GW190517_055101 10.8
+36.708 GW190719_215514 7.9
+37.797000000000004 GW190503_185404 12.2
+37.82 GW190926_050336 8.1
+38.22 GW190413_052954 9.0
+38.779999999999994 GW200208_130117 10.8
+39.42 GW170823 11.5
+39.687999999999995 GW190521_074359 25.9
+41.05200000000001 GW200224_222234 20.0
+41.919 GW200209_085452 9.6
+42.504000000000005 GW190803_022701 9.3
+43.215 GW190910_112807 14.5
+43.332 GW200219_094415 10.7
+43.4 GW190424_180648 10.0939769744873
+44.687999999999995 GW190727_060333 11.7
+45.529999999999994 GW190421_213856 10.7
+46.332 GW190731_140936 8.8
+46.812000000000005 GW200220_124850 8.5
+46.94299999999999 GW191127_050227 9.2
+47.613 GW190916_200658 8.1
+47.724000000000004 GW190514_065416 8.0
+49.8 GW190909_114149 9.047895
+49.92 GW200128_022011 10.6
+51.038 GW191222_033537 12.5
+52.745999999999995 GW170729 10.2
+53.626999999999995 GW200216_220804 8.1
+53.946 GW190413_134308 10.6
+54.468 GW190929_012149 9.7
+55.476 GW190701_203306 11.2
+57.150000000000006 GW190620_030421 12.1
+59.375 GW191109_010717 17.3
+61.248 GW190805_211137 8.1
+61.684999999999995 GW191230_180458 10.4
+64.235 GW190519_153544 15.9
+71.52 GW190602_175927 13.2
+72.96000000000001 GW190706_222641 13.4
+74.11999999999999 GW190403_051519 7.6
+117.0 GW190521 14.6
+117.8 GW200220_061928 7.2
+131.48 GW190426_190642 8.7
+(array([ 2,  2,  3, 10, 10, 27,  6,  1]), array([  0.87,   1.74,   3.48,   6.96,  13.92,  27.84,  55.68, 111.36,
+       500.  ]))
+409.4593630630517
