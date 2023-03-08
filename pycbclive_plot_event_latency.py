@@ -1,26 +1,27 @@
 #!/usr/bin/env python
 
 """
-A plotting script for superevents in GraceDB, showing early warning and allsky events from all pipelines and their latency compared to the event time
+A plotting script for superevents in GraceDB, showing early warning and allsky
+events from all pipelines and their latency compared to the event time.
 """
 
 import argparse
+import logging
+import os
+import numpy as np
 import matplotlib
 matplotlib.use('agg')
 from matplotlib import pyplot as plt
+from datetime import datetime as dtdt
 from lal.gpstime import gps_to_utc, utc_to_gps
 from ligo.gracedb.rest import GraceDb as gdb
-import os
-import copy
-import numpy as np
-import datetime as dt
-from datetime import datetime as dtdt
-import logging
 
 # This is the only pycbc import at the moment - it might be nice to get this into a
 # LAL (or similar) function, so the folks at gwcelery are more likely to adopt this
 from pycbc.waveform.spa_tmplt import spa_length_in_time
 from pycbc import init_logging
+
+
 # Set up dictionaries to use for the different pipelines and searches
 
 # Colours chosen to be colourblind friendly.
@@ -33,7 +34,6 @@ pipelinecolours = {
     'spiir':   '#009E73',
 }
 
-
 _marker = {
     'standard': 'o',
     'highlight': '*',
@@ -45,7 +45,6 @@ default_color = '#D0D0D0'
 pmt_color = '#707070'
 pmt_linestyle = '--'
 
-
 pipelinenames = {
     'cwb':     'cWB',
     'gstlal':  'GstLAL',
@@ -56,15 +55,17 @@ pipelinenames = {
 
 searchnames = {
     'AllSky': 'Full Bandwidth',
-    'EarlyWarning': 'Early Warning',
+    'LowMass': 'Full Bandwidth',
+    'EarlyWarning': 'Early Warning'
 }
 
 searchedges = {
     'AllSky': 'face',
+    'LowMass': 'face',
     'EarlyWarning': 'k',
 }
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(description=__doc__)
 playground_server = 'https://gracedb-playground.ligo.org/api/'
 parser.add_argument('--gracedb-server', default=playground_server,
                     help="Server of the gracedb instance to use for getting "
@@ -144,12 +145,12 @@ def get_event_info(event, central_time):
     return (g, latency, snr, prem_time, log_times)
 
 
-
 if args.superevent_id:
     response = client.superevent(args.superevent_id).json()
     logging.info("Getting highlight event info")
     g_highlight = response['preferred_event']
     highlight_e = client.event(g_highlight).json()
+    pref_coinc_insp = highlight_e['extra_attributes']['CoincInspiral']
     central_time = pref_coinc_insp['end_time'] \
                        + pref_coinc_insp['end_time_ns'] * 1e-9
     pref_event_info = get_event_info(highlight_e, central_time)
@@ -158,8 +159,7 @@ if args.superevent_id:
 
     # Get the list of g-events associated with the superevent
     gevent_list = response['gw_events']
-    gevent_list.delete(g_highlight)
-
+    gevent_list.remove(g_highlight)
 else:
     # Get the event time of the given event
     g_highlight = args.event_id
@@ -194,8 +194,10 @@ counter = 0
 for g in gevent_list:
     e = client.event(g).json()
     pipeline, search = e['pipeline'].lower(), e['search']
-    if args.pipeline_only and not pipeline == args.pipeline_only: continue
-    if args.search_only and not search == args.search_only: continue
+    if args.pipeline_only and not pipeline == args.pipeline_only:
+        continue
+    if args.search_only and not search == args.search_only:
+        continue
     counter += 1
     gevent_info = get_event_info(e, central_time)
     all_events[pipeline][search].append(gevent_info)
@@ -284,10 +286,17 @@ else:
 
 # Show how the markers are modified for early-warning (and highlight) events
 for search in searchnames.keys():
-    if args.search_only and not search == args.search_only: continue
-
-    leg2_lines.append(ax.scatter([0],[-20], color=default_color, s=80,
-                                 edgecolors=searchedges[search]))
+    if args.search_only and search != args.search_only:
+        continue
+    leg2_lines.append(
+        ax.scatter(
+            [0],
+            [-20],
+            color=default_color,
+            s=80,
+            edgecolors=searchedges[search]
+        )
+    )
     leg2_labels.append(f"{searchnames[search]}")
 
 for k in ['comment', 'file']:
@@ -298,7 +307,7 @@ for k in ['comment', 'file']:
 pmt_plot, = ax.plot([0,0], [-20,-20],
                     linestyle=pmt_linestyle, c=pmt_color)
 leg2_lines.append(pmt_plot)
-leg2_labels.append("Time from template end")
+leg2_labels.append("Template end to upload")
 
 # Cut off the points used for adding to the legend
 ax.set_ylim(bottom=max(4, ylim_orig[0]), top=ylim_orig[1])
@@ -315,7 +324,7 @@ leg1 = plt.legend(leg1_lines, leg1_labels,
 ax.add_artist(leg2)
 
 # Indicate the time of the event (always zero on this scale)
-ax.axvline(0, color='r',linestyle='--')
+ax.axvline(0, color='r', linestyle='--')
 
 # Informative title and axes
 if args.superevent_id:
@@ -325,7 +334,7 @@ else:
 central_utc = gps_to_utc(central_time)
 central_time_str = central_utc.strftime("%Y-%m-%d %H:%M:%S.") + \
     f"{central_utc.microsecond // 1000:03d}"
-ax.set_xlabel(f"Time from {central_time_str}")
+ax.set_xlabel(f"Time from {central_time_str} [s]")
 ax.set_ylabel('Network SNR')
 
 # Add dotted grid
@@ -334,8 +343,9 @@ ax.grid(visible=True, which='major', linestyle='--', zorder=-50)
 # Need to adjust the size of the plot on the figure to get the legends in
 fig.subplots_adjust(left=0.1, right=0.75)
 
-
-id_str = args.superevent_id if args.superevent_id else args.event_id
+id_str = args.superevent_id or args.event_id
 filetrunk = os.path.join(args.output_dir, f"{id_str}_timeline")
 fig.savefig(filetrunk + '.pdf')
 fig.savefig(filetrunk + '.png')
+
+logging.info('Done')
