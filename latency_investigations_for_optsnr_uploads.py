@@ -4,6 +4,7 @@
 Code used for investigating usefulness of optimised SNR uploads
 """
 
+import argparse
 import matplotlib
 import pickle
 import json
@@ -14,20 +15,25 @@ from astropy.time import Time
 
 matplotlib.use('agg')
 
-# It is useful to query and save all the trig data only once
-# to enable various investigations. Set the following toggle 
-# to True if the data is to be queried.
-collect_data = False
-
-# consider events after 10 Dec '22
-latest_only = False
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--collect-data', action='store_true', default=False,
+                    help='It is convenient to query and save all the trig data only once. \
+Run using this flag to query and store the data first, and then without it to generate the plots from saved data.')
+parser.add_argument('--latest-only', action='store_true', default=True,
+                    help='Consider events after 10/12/22.')
+parser.add_argument('--datafolder', type=str, default='.',
+                    help='Path to Data folder.')
+parser.add_argument('--plotsfolder', type=str, default='.',
+                    help='Path to Plots folder.')
+args = parser.parse_args()
 
 collect_keys = ['graceid', 'pipeline', 'gpstime', 
                 'reporting_latency', 'instruments', 'nevents', 
                 'far', 'likelihood', 'superevent', 'search']
 
-# Collect the data
+# Query and save the data
 if collect_data:
+
     playground_server = 'https://gracedb-playground.ligo.org/api/'
     client = gdb(service_url=playground_server)
     client.ping()
@@ -45,8 +51,10 @@ if collect_data:
         i += 1
         if i == 100: break
 
-    with open('/home/shreejit.jadhav/WORK/pycbc-live-utils/Tests/pycbclive_events_fulldata.pkl', 'wb') as f:
+    with open(f'{args.datafolder}/pycbclive_events_fulldata.pkl', 'wb') as f:
         pickle.dump(collected_data, f, protocol=5)
+
+    exit()
 
 
 # Assuming the data has already been saved, read the saved data
@@ -60,7 +68,7 @@ data['chisq_dof'] = []
 data['chisq'] = []
 data['index'] = []
 
-with open('/home/shreejit.jadhav/WORK/pycbc-live-utils/Tests/pycbclive_events_fulldata.pkl', 'rb') as f:
+with open(f'{args.datafolder}/pycbclive_events_fulldata.pkl', 'rb') as f:
     tmp_data = pickle.load(f)
 
 for i, d in enumerate(tmp_data):
@@ -109,6 +117,7 @@ for i in data['index']:
 
 # Plots
 if latest_only:
+    # consider events after 10 Dec '22
     suff = '_after10dec22'
     s = Time("2022-12-10T00:00:00", format='isot', scale='utc')
 else:
@@ -157,7 +166,7 @@ plt.xlabel('Reporting Latency (sec)')
 plt.ylabel('Cumulative fraction of events')
 plt.legend()
 plt.title(f'Optimised events: {Nabove} with latency > 270 sec and {Nbelow} with latency <= 270 sec')
-plt.savefig(f'/home/shreejit.jadhav/public_html/pycbc_live_stuff/pycbc_live_event_latency_fullrange{suff}.png')
+plt.savefig(f'{args.plotsfolder}/pycbc_live_event_latency_fullrange{suff}.png')
 
 # Scatter: reporting latency vs template length
 plt.figure(figsize=(10,10))
@@ -177,7 +186,7 @@ plt.xlabel('Template length (sec)')
 plt.ylabel('Reporting Latency (sec)')
 plt.legend()
 # plt.title(f'Opt events: {Nabove} events with latency > 270 sec and {Nbelow} events with latency <= 270 sec')
-plt.savefig(f'/home/shreejit.jadhav/public_html/pycbc_live_stuff/pycbc_live_event_templen_latency{suff}.png')
+plt.savefig(f'{args.plotsfolder}/pycbc_live_event_templen_latency{suff}.png')
 
 
 # only early warning ones
@@ -196,7 +205,7 @@ plt.xlabel('Reporting Latency (sec)')
 plt.ylabel('Cumulative fraction of events')
 plt.legend(loc='upper left')
 plt.grid(which='both')
-plt.savefig(f'/home/shreejit.jadhav/public_html/pycbc_live_stuff/pycbc_live_event_latency_fullrange_earlywarning_zoom{suff}.png')
+plt.savefig(f'{args.plotsfolder}/pycbc_live_event_latency_fullrange_earlywarning_zoom{suff}.png')
 
 # Scatter: Reporting Latency vs Template length
 plt.figure(figsize=(8,8))
@@ -209,5 +218,5 @@ plt.xlabel('Template length (sec)')
 plt.ylabel('Reporting Latency (sec)')
 plt.legend()
 # plt.title(f'Opt events: {Nabove} events with latency > 270 sec and {Nbelow} events with latency <= 270 sec')
-plt.savefig(f'/home/shreejit.jadhav/public_html/pycbc_live_stuff/pycbc_live_event_templen_latency_earlywarn{suff}.png')
+plt.savefig(f'{args.plotsfolder}/pycbc_live_event_templen_latency_earlywarn{suff}.png')
 
