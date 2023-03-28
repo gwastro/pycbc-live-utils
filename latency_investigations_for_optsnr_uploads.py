@@ -1,5 +1,9 @@
 #!/usr/bin/env python
-# coding: utf-8
+
+"""
+Code used for investigating usefulness of optimised SNR uploads
+"""
+
 import matplotlib
 import pickle
 import json
