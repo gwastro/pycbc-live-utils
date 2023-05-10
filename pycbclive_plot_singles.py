@@ -17,6 +17,7 @@ matplotlib.use('agg')
 import pylab as pl
 import h5py
 import lal
+import glob
 from ligo.segments import segment, segmentlist
 from pycbc.events.ranking import newsnr_sgveto
 
@@ -53,12 +54,13 @@ def plot_gate(ax, gate):
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument(
-    '--trigger-files',
+    '--trigger-files-glob',
     type=str,
-    nargs='+',
     required=True,
     metavar='PATH',
-    help='List of HDF5 files containing triggers'
+    help='Glob command to find HDF5 files containing triggers.'
+         'Must have the wildcards escaped, using a backslash, '
+         'or surrounding the argument in quotes'
 )
 parser.add_argument(
     '--detectors',
@@ -108,7 +110,9 @@ trig_segs = {d: segmentlist([]) for d in detectors}
 triggers = {d: None for d in detectors}
 gates = {d: [] for d in detectors}
 
-for fn in tqdm.tqdm(sorted(args.trigger_files)):
+trigger_files = glob.glob(args.trigger_files_glob)
+
+for fn in tqdm.tqdm(sorted(trigger_files)):
     try:
         with h5py.File(fn, 'r') as trigfile:
             fn_fields = os.path.basename(fn).replace('.hdf', '').split('-')
