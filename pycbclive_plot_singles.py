@@ -89,6 +89,13 @@ parser.add_argument(
     required=True,
     help='Path to output plot'
 )
+parser.add_argument(
+    '--color-minmax',
+    type=float,
+    nargs=2,
+    default=[6, 12],
+    help="Minimum/maximum values for the colorbar"
+)
 args = parser.parse_args()
 
 detectors = args.detectors
@@ -209,8 +216,8 @@ for detector in detectors:
         triggers[detector][0][sorter],
         triggers[detector][1][sorter],
         c=triggers[detector][2][sorter],
-        vmin=6,
-        vmax=12,
+        vmin=args.color_minmax[0],
+        vmax=args.color_minmax[1],
         cmap='magma_r',
         s=4,
         lw=0
