@@ -89,6 +89,13 @@ parser.add_argument(
     required=True,
     help='Path to output plot'
 )
+parser.add_argument(
+    '--color-minmax',
+    type=float,
+    nargs=2,
+    default=[6, 12],
+    help="Minimum/maximum values for the colorbar"
+)
 args = parser.parse_args()
 
 detectors = args.detectors
@@ -107,7 +114,7 @@ logging.info('Reading triggers')
 
 file_segs = segmentlist([])
 trig_segs = {d: segmentlist([]) for d in detectors}
-triggers = {d: None for d in detectors}
+triggers = {d: {'dur': [], 'time': [], 'rank': []} for d in detectors}
 gates = {d: [] for d in detectors}
 
 trigger_files = glob.glob(args.trigger_files_glob)
@@ -136,30 +143,30 @@ for fn in tqdm.tqdm(sorted(trigger_files)):
 
                 trig_segs[detector].append(file_segment)
 
-                trig_times = grp['end_time'][:]
-                trig_durs = grp['template_duration'][:]
                 trig_ranks = newsnr_sgveto(
                     grp['snr'][:],
                     grp['chisq'][:],
                     grp['sg_chisq'][:]
                 )
-                if triggers[detector] is None:
-                    triggers[detector] = [trig_times, trig_durs, trig_ranks]
-                else:
-                    triggers[detector] = [
-                        np.concatenate((triggers[detector][0], trig_times)),
-                        np.concatenate((triggers[detector][1], trig_durs)),
-                        np.concatenate((triggers[detector][2], trig_ranks))
-                    ]
+                triggers[detector]['rank'] += list(trig_ranks)
+
+                triggers[detector]['time'] += list(grp['end_time'][:])
+                triggers[detector]['dur'] += list(grp['template_duration'][:])
     except OSError:
         logging.error(f'Failed reading {fn}, ignoring')
+
+n_triggers = {}
+for detector in detectors:
+    for k in ['rank', 'dur', 'time']:
+        triggers[detector][k] = np.array(triggers[detector][k])
+    n_triggers[detector] = triggers[detector]['rank'].size
 
 logging.info('Plotting')
 
 ar_dur = Autorange()
 for detector in detectors:
-    if triggers[detector] is not None:
-        ar_dur.update(triggers[detector][1])
+    if n_triggers[detector]:
+        ar_dur.update(triggers[detector]['dur'])
 
 file_segs.coalesce()
 for detector in detectors:
@@ -167,13 +174,14 @@ for detector in detectors:
 
 ax[detectors[-1]].set_xlabel('Time')
 
+
 for detector in detectors:
     axd = ax[detector]
-    if triggers[detector] is None:
+    if n_triggers[detector] == 0:
         axd.text(
             0.5,
             0.5,
-            'No triggers',
+            f'{detector}: No triggers',
             horizontalalignment='center',
             verticalalignment='center',
             transform=axd.transAxes
@@ -199,18 +207,18 @@ for detector in detectors:
         lw=3
     )
     # plot triggers
-    sorter = np.argsort(triggers[detector][2])
+    sorter = np.argsort(triggers[detector]['rank'])
     print('Max {} rw SNR {:.2f} at {:.3f}'.format(
         detector,
-        triggers[detector][2][sorter[-1]],
-        triggers[detector][0][sorter[-1]]
+        triggers[detector]['rank'][sorter[-1]],
+        triggers[detector]['time'][sorter[-1]]
     ))
     axd.scatter(
-        triggers[detector][0][sorter],
-        triggers[detector][1][sorter],
-        c=triggers[detector][2][sorter],
-        vmin=6,
-        vmax=12,
+        triggers[detector]['time'][sorter],
+        triggers[detector]['dur'][sorter],
+        c=triggers[detector]['rank'][sorter],
+        vmin=args.color_minmax[0],
+        vmax=args.color_minmax[1],
         cmap='magma_r',
         s=4,
         lw=0
@@ -262,7 +270,8 @@ ax[detectors[-1]].set_xticklabels(time_tick_labels)
 # add colorbar
 cb = fig.colorbar(
     matplotlib.cm.ScalarMappable(
-        matplotlib.colors.Normalize(vmin=6, vmax=12),
+        matplotlib.colors.Normalize(vmin=args.color_minmax[0],
+                                    vmax=args.color_minmax[1]),
         cmap='magma_r'
     ),
     cax=ax['cb'],
