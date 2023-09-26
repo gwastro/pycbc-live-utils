@@ -14,6 +14,7 @@ import os
 import glob
 import datetime
 import numpy as np
+import subprocess
 from astropy.time import Time
 from dateutil.parser import parse as dateutil_parse
 
@@ -86,6 +87,28 @@ def parse_cli():
         '--verbose',
         action='store_true'
     )
+    parser.add_argument(
+        '--mail-volunteers-file',
+        help='Location of the file containing email addresses '
+             'that should recieve email warnings about lag if '
+             'lag is above --lag-warning-limit for --lag-warning-time.'
+    )
+    parser.add_argument(
+        '--lag-warning-limit',
+        default=30,
+        type=float,
+        help='If the lag is above this limit for the amount of '
+             'time in --lag-warning-time, send an email to the '
+             'addresses in --mail-volunteers-file. Seconds, default=30'
+    )
+    parser.add_argument(
+        '--lag-warning-time',
+        default=5.,
+        type=float,
+        help='If the lag is above --lag-warning-limit for this amount '
+             'time, send an email to the addresses in '
+             '--mail-volunteers-file. Minutes, default=5'
+    )
     return parser.parse_args()
 
 
@@ -107,6 +130,7 @@ files = sorted(glob.glob(args.log_glob))
 for f in files:
     logging.info('Parsing %s', f)
     with open(f, 'r') as log_f:
+        events_this_file = 0
         for line in log_f:
             if 'Took' not in line and 'Starting' not in line:
                 continue
@@ -117,6 +141,7 @@ for f in files:
             if len(fields) not in [4, 15]:
                 continue
             log_timestamp = fields[0]
+            events_this_file += 1
             log_rank = int(fields[2])
             if 'Starting' in line:
                 # adding the nan's will tell matplotlib
@@ -132,8 +157,11 @@ for f in files:
                 data[log_rank] = []
             times[log_rank].append(log_timestamp)
             data[log_rank].append((log_n_det, log_lag))
+        logging.info("Adding %d events", events_this_file)
 
+logging.info("%d data points", sum([len(times[rank]) for rank in times]))
 logging.info('Converting timestamps to GPS')
+
 for rank in times:
     times[rank] = iso_to_gps(times[rank])
 
@@ -184,6 +212,32 @@ for rank in sorted(data):
         color=color,
         zorder=zorder
     )
+
+# Check if the rank=0 lag is too high for too long
+# - if so, email people
+rank0_times = times[0]
+sorter = np.argsort(rank0_times)
+rank0_times = rank0_times[sorter]
+rank0_lags = data[0][sorter, 1]
+# Convert time to search into seconds
+time_to_search = args.lag_warning_time * 60
+to_check_idx = np.searchsorted(rank0_times, gps_now - time_to_search)
+lag_test = rank0_lags[to_check_idx:]
+if all(lag_test > args.lag_warning_limit) and args.mail_volunteers_file:
+    with open(args.mail_volunteers_file, 'r') as mail_volunteers_file:
+        volunteers = [volunteer.strip() for volunteer in
+                      mail_volunteers_file.readlines()]
+    logging.info("Emailing %s with warnings", ' '.join(volunteers))
+    mail_command = [
+        'mail',
+        '-s',
+        f"PyCBC live lag > {args.lag_warning_limit}s for past {time_to_search/60:.1f} minutes"
+        ]
+    mail_command += volunteers
+    mail_body = f'Lag for rank-0 events in log files which match ' + \
+                f'{args.log_glob} is always above {args.lag_warning_limit}s in ' + \
+                f'the GPS time range {gps_now - 5 * 60:.2f}-{gps_now:.2f}'
+    subprocess.run(mail_command, input=mail_body, text=True)
 
 pp.suptitle(args.day)
 ax_lag.axvspan(
