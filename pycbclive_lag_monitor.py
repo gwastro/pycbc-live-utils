@@ -141,8 +141,8 @@ for f in files:
             if len(fields) not in [4, 15]:
                 continue
             log_timestamp = fields[0]
-            events_this_file += 1
             log_rank = int(fields[2])
+            events_this_file += 1
             if 'Starting' in line:
                 # adding the nan's will tell matplotlib
                 # to break the curves when PyCBC Live starts
@@ -163,10 +163,37 @@ logging.info("%d data points", sum([len(times[rank]) for rank in times]))
 logging.info('Converting timestamps to GPS')
 
 for rank in times:
+    data[rank] = np.array(data[rank])
     times[rank] = iso_to_gps(times[rank])
 
 num_procs = len(data)
 logging.info('%d procs', num_procs)
+
+# Check if the rank=0 lag is too high for too long
+# - if so, email people
+rank0_times = times[0]
+sorter = np.argsort(rank0_times)
+rank0_times = rank0_times[sorter]
+rank0_lags = data[0][sorter, 1]
+# Convert time to search into seconds
+time_to_search = args.lag_warning_time * 60
+to_check_idx = np.searchsorted(rank0_times, gps_now - time_to_search)
+lag_test = rank0_lags[to_check_idx:]
+if len(lag_test) and all(lag_test > args.lag_warning_limit) and args.mail_volunteers_file:
+    with open(args.mail_volunteers_file, 'r') as mail_volunteers_file:
+        volunteers = [volunteer.strip() for volunteer in
+                      mail_volunteers_file.readlines()]
+    logging.info("Emailing %s with warnings", ' '.join(volunteers))
+    mail_command = [
+        'mail',
+        '-s',
+        f"PyCBC live lag > {args.lag_warning_limit}s for past {time_to_search/60:.1f} minutes"
+        ]
+    mail_command += volunteers
+    mail_body = f'Lag for rank-0 events in log files which match ' + \
+                f'{args.log_glob} is always above {args.lag_warning_limit}s in ' + \
+                f'the GPS time range {gps_now - time_to_search:.2f}-{gps_now:.2f}'
+    subprocess.run(mail_command, input=mail_body, text=True)
 
 logging.info('Plotting')
 pp.figure(figsize=(15,7))
@@ -175,7 +202,6 @@ ax_n_det = pp.subplot(2, 1, 2)
 legend_flag = False
 
 for rank in sorted(data):
-    data[rank] = np.array(data[rank])
     if rank == 0:
         # rank-0 gives the total lag, so make it stand out
         color = '#f00'
@@ -212,32 +238,6 @@ for rank in sorted(data):
         color=color,
         zorder=zorder
     )
-
-# Check if the rank=0 lag is too high for too long
-# - if so, email people
-rank0_times = times[0]
-sorter = np.argsort(rank0_times)
-rank0_times = rank0_times[sorter]
-rank0_lags = data[0][sorter, 1]
-# Convert time to search into seconds
-time_to_search = args.lag_warning_time * 60
-to_check_idx = np.searchsorted(rank0_times, gps_now - time_to_search)
-lag_test = rank0_lags[to_check_idx:]
-if all(lag_test > args.lag_warning_limit) and args.mail_volunteers_file:
-    with open(args.mail_volunteers_file, 'r') as mail_volunteers_file:
-        volunteers = [volunteer.strip() for volunteer in
-                      mail_volunteers_file.readlines()]
-    logging.info("Emailing %s with warnings", ' '.join(volunteers))
-    mail_command = [
-        'mail',
-        '-s',
-        f"PyCBC live lag > {args.lag_warning_limit}s for past {time_to_search/60:.1f} minutes"
-        ]
-    mail_command += volunteers
-    mail_body = f'Lag for rank-0 events in log files which match ' + \
-                f'{args.log_glob} is always above {args.lag_warning_limit}s in ' + \
-                f'the GPS time range {gps_now - 5 * 60:.2f}-{gps_now:.2f}'
-    subprocess.run(mail_command, input=mail_body, text=True)
 
 pp.suptitle(args.day)
 ax_lag.axvspan(
